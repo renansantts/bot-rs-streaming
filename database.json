@@ -1,0 +1,55 @@
+{
+  "users": {
+    "5134426499": {
+      "id": "5134426499",
+      "balance": 0,
+      "purchases": []
+    }
+  },
+  "products": [
+    {
+      "id": "netflix-premium",
+      "name": "Netflix Premium",
+      "price": 13,
+      "stock": [
+        "email1@exemplo.com | senha123",
+        "email2@exemplo.com | senha123"
+      ]
+    },
+    {
+      "id": "disney-premium",
+      "name": "Disney+ Premium",
+      "price": 10,
+      "stock": [
+        "email@exemplo.com | senha123"
+      ]
+    },
+    {
+      "id": "prime-video",
+      "name": "Prime Video",
+      "price": 7,
+      "stock": [
+        "email@exemplo.com | senha123"
+      ]
+    },
+    {
+      "id": "hbo-max-premium",
+      "name": "HBO Max Premium",
+      "price": 12,
+      "stock": [
+        "email1 senha1",
+        "email2 senha2"
+      ]
+    },
+    {
+      "id": "hbo",
+      "name": "Hbo",
+      "price": 5,
+      "stock": [
+        "renansantts627@gmail,com"
+      ]
+    }
+  ],
+  "payments": {},
+  "orders": []
+}
