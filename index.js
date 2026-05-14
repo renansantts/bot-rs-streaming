@@ -106,12 +106,51 @@ bot.command('meuid', (ctx) => {
 })
 
 bot.command('admin', (ctx) => {
-  if (String(ctx.from.id) !== ADMIN_ID) {
-    return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
-  }
+ if (String(ctx.from.id) !== ADMIN_ID) {
+   return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
+ }
+
+ ctx.reply(`
+👑 PAINEL ADMIN
+
+📦 Adicionar Produto
+📥 Adicionar Estoque
+🛒 Meus Pedidos / Vendas
+📋 Listar Produtos
+✏️ Editar Produto
+🗑 Remover Produto
+💰 Adicionar Saldo Manual
+👤 Ver Clientes
+👥 Afiliados
+
+📢 Enviar Aviso
+🎟 Criar Cupom
+📊 Estatísticas
+⚙️ Configurações
+`, {
+ reply_markup: {
+   keyboard: [
+     ['📦 Adicionar Produto'],
+     ['📥 Adicionar Estoque'],
+     ['🛒 Meus Pedidos / Vendas'],
+     ['📋 Listar Produtos'],
+     ['✏️ Editar Produto'],
+     ['🗑 Remover Produto'],
+     ['💰 Adicionar Saldo Manual'],
+     ['👤 Ver Clientes'],
+     ['👥 Afiliados'],
+     ['📢 Enviar Aviso'],
+     ['🎟 Criar Cupom'],
+     ['📊 Estatísticas'],
+     ['⚙️ Configurações']
+   ],
+   resize_keyboard: true
+ }
+})
+})
 
   ctx.reply('⚙️ Painel ADM', adminMenu())
-})
+
 bot.action('menu_products', async (ctx) => {
   await ctx.answerCbQuery()
   const db = loadDB()
