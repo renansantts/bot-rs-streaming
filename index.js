@@ -105,12 +105,12 @@ bot.command('meuid', (ctx) => {
   ctx.reply(`🆔 Seu ID é: ${ctx.from.id}`)
 })
 
-bot.command('admin', (ctx) => {
+bot.command(['admin', 'adm'], (ctx) => {
   if (String(ctx.from.id) !== ADMIN_ID) {
     return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
   }
 
-  ctx.reply(`
+  return ctx.reply(`
 👑 PAINEL ADMIN
 
 📦 Adicionar Produto
@@ -148,7 +148,6 @@ bot.command('admin', (ctx) => {
     }
   })
 })
-
 
   ctx.reply('⚙️ Painel ADM', adminMenu())
 
