@@ -86,8 +86,8 @@ Entre em contato com nosso suporte, estamos à disposição para te ajudar! 😊
           ['👤 PERFIL', '💰 ADICIONAR SALDO'],
           ['🏆 RANKING'],
           ['👨🏻‍💻 SUPORTE', '📍 ALUGAR BOT'],
-          ['🔎 PESQUISAR SERVIÇO']
-          ['👑 PAINEL ADMIN']
+          ['🔎 PESQUISAR SERVIÇO'],
+          ['👑 PAINEL ADMIN'],
         ],
         resize_keyboard: true
       }
