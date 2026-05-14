@@ -105,15 +105,12 @@ bot.command('meuid', (ctx) => {
   ctx.reply(`🆔 Seu ID é: ${ctx.from.id}`)
 })
 
-bot.hears('👑 PAINEL ADMIN', async (ctx) => {
+bot.command('admin', (ctx) => {
   if (String(ctx.from.id) !== ADMIN_ID) {
-    return ctx.reply('❌ Você não tem permissão.')
+    return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
   }
 
-  ctx.reply('⚙️ Painel ADM', adminMenu())
-})
-
- ctx.reply(`
+  ctx.reply(`
 👑 PAINEL ADMIN
 
 📦 Adicionar Produto
@@ -131,24 +128,25 @@ bot.hears('👑 PAINEL ADMIN', async (ctx) => {
 📊 Estatísticas
 ⚙️ Configurações
 `, {
- reply_markup: {
-   keyboard: [
-     ['📦 Adicionar Produto'],
-     ['📥 Adicionar Estoque'],
-     ['🛒 Meus Pedidos / Vendas'],
-     ['📋 Listar Produtos'],
-     ['✏️ Editar Produto'],
-     ['🗑 Remover Produto'],
-     ['💰 Adicionar Saldo Manual'],
-     ['👤 Ver Clientes'],
-     ['👥 Afiliados'],
-     ['📢 Enviar Aviso'],
-     ['🎟 Criar Cupom'],
-     ['📊 Estatísticas'],
-     ['⚙️ Configurações']
-   ],
-   resize_keyboard: true
- }
+    reply_markup: {
+      keyboard: [
+        ['📦 Adicionar Produto'],
+        ['📥 Adicionar Estoque'],
+        ['🛒 Meus Pedidos / Vendas'],
+        ['📋 Listar Produtos'],
+        ['✏️ Editar Produto'],
+        ['🗑 Remover Produto'],
+        ['💰 Adicionar Saldo Manual'],
+        ['👤 Ver Clientes'],
+        ['👥 Afiliados'],
+        ['📢 Enviar Aviso'],
+        ['🎟 Criar Cupom'],
+        ['📊 Estatísticas'],
+        ['⚙️ Configurações']
+      ],
+      resize_keyboard: true
+    }
+  })
 })
 
 
