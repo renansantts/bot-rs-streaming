@@ -312,13 +312,7 @@ https://t.me/rsstreaming_bot?start=${ctx.from.id}
 
 })
 
-bot.action('admin_sales', async (ctx) => {
-  await ctx.answerCbQuery()
-  if (String(ctx.from.id) !== ADMIN_ID) return ctx.reply('❌ Sem permissão.')
-  const db = loadDB()
-  const total = db.orders.reduce((sum, o) => sum + Number(o.price), 0)
-  ctx.reply(`📊 Relatório\n\nVendas: ${db.orders.length}\nTotal vendido: ${money(total)}`)
-})
+
 
 bot.action('admin_help_add_product', async (ctx) => {
   await ctx.answerCbQuery()
