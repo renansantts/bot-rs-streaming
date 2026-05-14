@@ -105,10 +105,13 @@ bot.command('meuid', (ctx) => {
   ctx.reply(`🆔 Seu ID é: ${ctx.from.id}`)
 })
 
-bot.command('admin', (ctx) => {
- if (String(ctx.from.id) !== ADMIN_ID) {
-   return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
- }
+bot.hears('👑 PAINEL ADMIN', async (ctx) => {
+  if (String(ctx.from.id) !== ADMIN_ID) {
+    return ctx.reply('❌ Você não tem permissão.')
+  }
+
+  ctx.reply('⚙️ Painel ADM', adminMenu())
+})
 
  ctx.reply(`
 👑 PAINEL ADMIN
@@ -147,7 +150,7 @@ bot.command('admin', (ctx) => {
    resize_keyboard: true
  }
 })
-})
+
 
   ctx.reply('⚙️ Painel ADM', adminMenu())
 
