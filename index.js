@@ -223,6 +223,7 @@ bot.hears('⚙️ Configurações', (ctx) => {
 
 bot.hears('🔙 Voltar', (ctx) => {
   const db = loadDB()
+  const user = getUser(db, ctx.from.id)
 
   ctx.reply(`🏠 Menu principal\n💰 Saldo: ${money(user.balance)}`, mainMenu())
 })
