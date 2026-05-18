@@ -576,9 +576,8 @@ ctx.reply(`
 
 🎁 Código: ${gift.code}
 💰 Valor recebido: ${money(gift.value)}
-💵 Saldo atual: ${money(db.users[userId].balance)}
+💳 Saldo atual: ${money(db.users[userId].balance)}
 `)
-
 })
 bot.command('gift', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
