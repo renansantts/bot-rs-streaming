@@ -169,139 +169,191 @@ Escolha uma opção abaixo:
         }
     })
 })
+// =========================
+// ADICIONAR PRODUTO
+// =========================
+
 bot.hears('📦 Adicionar Produto', (ctx) => {
-    ctx.reply('📦 Comando adicionar produto.')
+  if (String(ctx.from.id) !== ADMIN_ID) {
+    return ctx.reply('❌ Sem permissão.')
+  }
+
+  ctx.reply(`
+📦 ENVIE:
+
+/addproduto Nome|Valor
+
+Exemplo:
+/addproduto Netflix Premium|15
+`)
 })
+
+bot.command('addproduto', (ctx) => {
+  if (String(ctx.from.id) !== ADMIN_ID) {
+    return ctx.reply('❌ Sem permissão.')
+  }
+
+  const db = loadDB()
+
+  if (!db.products) {
+    db.products = []
+  }
+
+  const text = ctx.message.text.replace('/addproduto', '').trim()
+
+  const partes = text.split('|')
+
+  if (partes.length < 2) {
+    return ctx.reply('❌ Use: /addproduto Nome|Valor')
+  }
+
+  const nome = partes[0].trim()
+  const valor = Number(partes[1].replace(',', '.'))
+
+  if (!nome || !valor) {
+    return ctx.reply('❌ Dados inválidos.')
+  }
+
+  const produto = {
+    id: Date.now().toString(),
+    name: nome,
+    price: valor,
+    stock: []
+  }
+
+  db.products.push(produto)
+
+  saveDB(db)
+
+  ctx.reply(`
+✅ PRODUTO ADICIONADO
+
+📦 Nome: ${produto.name}
+💰 Valor: R$ ${produto.price}
+🆔 ID: ${produto.id}
+`)
+})
+
+// =========================
+// LISTAR PRODUTOS
+// =========================
+
+bot.hears('📋 Listar Produtos', (ctx) => {
+  const db = loadDB()
+
+  if (!db.products || db.products.length === 0) {
+    return ctx.reply('❌ Nenhum produto cadastrado.')
+  }
+
+  let texto = '📋 PRODUTOS:\n\n'
+
+  db.products.forEach((p, i) => {
+    texto += `${i + 1}. ${p.name}\n`
+    texto += `💰 Valor: R$ ${p.price}\n`
+    texto += `📦 Estoque: ${p.stock.length}\n\n`
+  })
+
+  ctx.reply(texto)
+})
+
+// =========================
+// ADICIONAR ESTOQUE
+// =========================
 
 bot.hears('📥 Adicionar Estoque', (ctx) => {
-    ctx.reply('📥 Comando adicionar estoque.')
+  ctx.reply(`
+📥 ENVIE:
+
+/estoque ID|login:senha
+
+Exemplo:
+/estoque 123456|email@gmail.com:123456
+`)
 })
 
-bot.hears('🛒 Meus Pedidos / Vendas', (ctx) => {
-    ctx.reply('🛒 Comando vendas.')
-})
-
-bot.hears('📋 Listar Produtos', (ctx) => {
-    ctx.reply('📋 Lista de produtos.')
-})
-
-bot.hears('✏️ Editar Produto', (ctx) => {
-    ctx.reply('✏️ Editar produto.')
-})
-
-bot.hears('🗑 Remover Produto', (ctx) => {
-    ctx.reply('🗑 Remover produto.')
-})
-
-bot.hears('💰 Adicionar Saldo Manual', (ctx) => {
-    ctx.reply('💰 Adicionar saldo.')
-})
-
-bot.hears('👤 Ver Clientes', (ctx) => {
-    ctx.reply('👤 Lista de clientes.')
-})
-
-bot.hears('👥 Afiliados', (ctx) => {
-    ctx.reply('👥 Painel afiliados.')
-})
-
-bot.hears('📢 Enviar Aviso', (ctx) => {
-    ctx.reply('📢 Enviar aviso.')
-})
-
-bot.hears('🎟 Criar Cupom', (ctx) => {
-    ctx.reply('🎟 Criar cupom.')
-})
-
-bot.hears('📊 Estatísticas', (ctx) => {
-    ctx.reply('📊 Estatísticas do bot.')
-})
-
-bot.hears('⚙️ Configurações', (ctx) => {
-    ctx.reply('⚙️ Configurações do sistema.')
-})
-
-bot.hears('🔙 Voltar', (ctx) => {
+bot.command('estoque', (ctx) => {
   const db = loadDB()
-  const user = getUser(db, ctx.from.id)
 
-  ctx.reply(`🏠 Menu principal\n💰 Saldo: ${money(user.balance)}`, mainMenu())
+  const text = ctx.message.text.replace('/estoque', '').trim()
+
+  const partes = text.split('|')
+
+  if (partes.length < 2) {
+    return ctx.reply('❌ Use: /estoque ID|login:senha')
+  }
+
+  const id = partes[0]
+  const login = partes[1]
+
+  const produto = db.products.find(p => p.id == id)
+
+  if (!produto) {
+    return ctx.reply('❌ Produto não encontrado.')
+  }
+
+  produto.stock.push(login)
+
+  saveDB(db)
+
+  ctx.reply(`
+✅ ESTOQUE ADICIONADO
+
+📦 Produto: ${produto.name}
+📥 Estoque atual: ${produto.stock.length}
+`)
 })
-bot.hears('📋 Listar Produtos', (ctx) => {
-    const db = loadDB()
 
-    if (!db.products.length) {
-        return ctx.reply('❌ Nenhum produto cadastrado.')
-    }
-
-    let texto = '📋 PRODUTOS CADASTRADOS:\n\n'
-
-    db.products.forEach((p, i) => {
-        texto += `${i + 1}. ${p.name}\n`
-        texto += `💰 Valor: ${money(p.price)}\n`
-        texto += `📦 Estoque: ${p.stock.length}\n\n`
-    })
-
-    ctx.reply(texto)
-})
-
-
+// =========================
 // VER CLIENTES
+// =========================
+
 bot.hears('👤 Ver Clientes', (ctx) => {
-    const db = loadDB()
+  const db = loadDB()
 
-    if (!db.users.length) {
-        return ctx.reply('❌ Nenhum cliente encontrado.')
-    }
+  if (!db.users || db.users.length === 0) {
+    return ctx.reply('❌ Nenhum cliente.')
+  }
 
-    let texto = '👤 CLIENTES:\n\n'
+  let texto = '👤 CLIENTES:\n\n'
 
-    db.users.forEach((u, i) => {
-        texto += `${i + 1}. ID: ${u.id}\n`
-        texto += `💰 Saldo: ${money(u.balance)}\n\n`
-    })
+  db.users.forEach((u, i) => {
+    texto += `${i + 1}. ID: ${u.id}\n`
+    texto += `💰 Saldo: ${u.balance}\n\n`
+  })
 
-    ctx.reply(texto)
+  ctx.reply(texto)
 })
 
-
+// =========================
 // ESTATÍSTICAS
+// =========================
+
 bot.hears('📊 Estatísticas', (ctx) => {
-    const db = loadDB()
+  const db = loadDB()
 
-    const totalProdutos = db.products.length
-    const totalClientes = db.users.length
+  const totalProdutos = db.products ? db.products.length : 0
+  const totalClientes = db.users ? db.users.length : 0
 
-    ctx.reply(
-`📊 ESTATÍSTICAS DO BOT
+  ctx.reply(`
+📊 ESTATÍSTICAS
 
 📦 Produtos: ${totalProdutos}
-👤 Clientes: ${totalClientes}`
-    )
+👤 Clientes: ${totalClientes}
+`)
 })
 
-
-// AFILIADOS
-bot.hears('👥 Afiliados', (ctx) => {
-    ctx.reply('👥 Painel de afiliados em desenvolvimento.')
-})
-
-
-// CRIAR CUPOM
-bot.hears('🎟 Criar Cupom', (ctx) => {
-    ctx.reply('🎟 Sistema de cupons em desenvolvimento.')
-})
-
-
+// =========================
 // CONFIGURAÇÕES
+// =========================
+
 bot.hears('⚙️ Configurações', (ctx) => {
-    ctx.reply('⚙️ Painel de configurações.')
-})
+  ctx.reply(`
+⚙️ CONFIGURAÇÕES
 
-
-// ENVIAR AVISO
-bot.hears('📢 Enviar Aviso', (ctx) => {
-    ctx.reply('📢 Sistema de avisos.')
+🏪 Loja: RS Streaming
+💳 Pagamento: Mercado Pago
+🚀 Entrega: Automática
+`)
 })
 bot.action('menu_products', async (ctx) => {
   await ctx.answerCbQuery()
