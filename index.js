@@ -549,9 +549,10 @@ const codigo = ctx.message.text
 .trim()
 .toUpperCase()
 
-if (!codigo) {
-return ctx.reply('❌ Informe o código do Gift Card.')
-}
+const gift = db.gifts.find(g => g.code === codigo)
+
+if (!gift) return ctx.reply('❌ Gift Card inválido.')
+if (gift.used) return ctx.reply('❌ Esse Gift Card já foi usado.')
   const userId = String(ctx.from.id)
 
   if (!db.users[userId]) {
@@ -561,15 +562,15 @@ return ctx.reply('❌ Informe o código do Gift Card.')
     }
   }
 
-  db.users[userId].balance += Number(gift.value)
+ db.users[userId].balance += Number(gift.value)
 
-  gift.used = true
-  gift.usedBy = userId
-  gift.usedAt = new Date().toLocaleString('pt-BR')
+gift.used = true
+gift.usedBy = userId
+gift.usedAt = new Date().toLocaleString('pt-BR')
 
-  saveDB(db)
+saveDB(db)
 
-  ctx.reply(`
+ctx.reply(`
 ✅ GIFT CARD RESGATADO!
 
 🎁 Código: ${gift.code}
@@ -608,7 +609,21 @@ bot.command('gift', (ctx) => {
 💰 Valor: ${money(valor)}
 `)
 })
+bot.hears(/Gift Card/i, (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
+  ctx.reply(`
+🎁 Para criar Gift Card:
+
+/gift CODIGO VALOR
+
+Exemplo:
+/gift RS50 50
+
+Cliente resgata com:
+/resgatar RS50
+`)
+})
 bot.command('resgatar', (ctx) => {
   const db = garantirDB(loadDB())
   const codigo = ctx.message.text.replace('/resgatar', '').trim().toUpperCase()
