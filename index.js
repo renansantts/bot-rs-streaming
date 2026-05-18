@@ -45,6 +45,9 @@ function money(value) {
   return `R$ ${Number(value).toFixed(2).replace('.', ',')}`
 }
 
+function isAdmin(ctx) {
+  return String(ctx.from.id) === ADMIN_ID
+}
 // MENU PRINCIPAL
 function mainMenu() {
   return {
