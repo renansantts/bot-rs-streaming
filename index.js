@@ -138,29 +138,87 @@ bot.command('admin', (ctx) => {
 `, adminMenu())
 })
 
-bot.command('adm', (ctx) => {
-  if (String(ctx.from.id) !== ADMIN_ID) {
-    return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
-  }
+bot.command('admin', (ctx) => {
+    if (String(ctx.from.id) !== ADMIN_ID) {
+        return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
+    }
 
-  ctx.reply(`
+    ctx.reply(`
 👑 PAINEL ADMIN
 
-📦 Adicionar Produto
-📥 Adicionar Estoque
-🛒 Meus Pedidos / Vendas
-📋 Listar Produtos
-✏️ Editar Produto
-🗑 Remover Produto
-💰 Adicionar Saldo Manual
-👤 Ver Clientes
-👥 Afiliados
+Escolha uma opção abaixo:
+`, {
+        reply_markup: {
+            keyboard: [
+                ['📦 Adicionar Produto'],
+                ['📥 Adicionar Estoque'],
+                ['🛒 Meus Pedidos / Vendas'],
+                ['📋 Listar Produtos'],
+                ['✏️ Editar Produto'],
+                ['🗑 Remover Produto'],
+                ['💰 Adicionar Saldo Manual'],
+                ['👤 Ver Clientes'],
+                ['👥 Afiliados'],
+                ['📢 Enviar Aviso'],
+                ['🎟 Criar Cupom'],
+                ['📊 Estatísticas'],
+                ['⚙️ Configurações'],
+                ['🔙 Voltar']
+            ],
+            resize_keyboard: true
+        }
+    })
+})
+bot.hears('📦 Adicionar Produto', (ctx) => {
+    ctx.reply('📦 Comando adicionar produto.')
+})
 
-📢 Enviar Aviso
-🎟 Criar Cupom
-📊 Estatísticas
-⚙️ Configurações
-`, adminMenu())
+bot.hears('📥 Adicionar Estoque', (ctx) => {
+    ctx.reply('📥 Comando adicionar estoque.')
+})
+
+bot.hears('🛒 Meus Pedidos / Vendas', (ctx) => {
+    ctx.reply('🛒 Comando vendas.')
+})
+
+bot.hears('📋 Listar Produtos', (ctx) => {
+    ctx.reply('📋 Lista de produtos.')
+})
+
+bot.hears('✏️ Editar Produto', (ctx) => {
+    ctx.reply('✏️ Editar produto.')
+})
+
+bot.hears('🗑 Remover Produto', (ctx) => {
+    ctx.reply('🗑 Remover produto.')
+})
+
+bot.hears('💰 Adicionar Saldo Manual', (ctx) => {
+    ctx.reply('💰 Adicionar saldo.')
+})
+
+bot.hears('👤 Ver Clientes', (ctx) => {
+    ctx.reply('👤 Lista de clientes.')
+})
+
+bot.hears('👥 Afiliados', (ctx) => {
+    ctx.reply('👥 Painel afiliados.')
+})
+
+bot.hears('📢 Enviar Aviso', (ctx) => {
+    ctx.reply('📢 Enviar aviso.')
+})
+
+bot.hears('🎟 Criar Cupom', (ctx) => {
+    ctx.reply('🎟 Criar cupom.')
+})
+
+bot.hears('📊 Estatísticas', (ctx) => {
+    ctx.reply('📊 Estatísticas do bot.')
+})
+
+bot.hears('⚙️ Configurações', (ctx) => {
+    ctx.reply('⚙️ Configurações do sistema.')
 })
 
 bot.hears('🔙 Voltar', (ctx) => {
