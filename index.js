@@ -542,7 +542,7 @@ bot.command('aviso', async (ctx) => {
 
 // 🎁 GIFT CARD
 bot.command('resgatar', (ctx) => {
-const db = garantirDB(loadDB())
+const db = loadDB()
 
 const codigo = ctx.message.text
 .replace('/resgatar', '')
