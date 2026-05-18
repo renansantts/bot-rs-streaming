@@ -626,28 +626,42 @@ Cliente resgata com:
 `)
 })
 bot.command('resgatar', (ctx) => {
-  const db = garantirDB(loadDB())
-  const codigo = ctx.message.text.replace('/resgatar', '').trim().toUpperCase()
+const db = garantirDB(loadDB())
 
-  const gift = db.gifts.find(g => g.code === codigo)
-  if (!gift) return ctx.reply('❌ Gift Card inválido.')
-  if (gift.used) return ctx.reply('❌ Esse Gift Card já foi usado.')
+const codigo = ctx.message.text
+.replace('/resgatar', '')
+.trim()
+.toUpperCase()
 
-  const userId = String(ctx.from.id)
+const gift = db.gifts.find(g => g.code === codigo)
 
-  if (!db.users[userId]) db.users[userId] = { id: userId, balance: 0 }
+if (!gift) return ctx.reply('❌ Gift Card inválido.')
+if (gift.used) return ctx.reply('❌ Esse Gift Card já foi usado.')
 
-  db.users[userId].balance += gift.value
-  gift.used = true
-  gift.usedBy = userId
-  gift.usedAt = new Date().toLocaleString('pt-BR')
+const userId = String(ctx.from.id)
 
-  saveDB(db)
+if (!db.users[userId]) {
+db.users[userId] = {
+id: userId,
+balance: 0,
+purchases: []
+}
+}
 
-  ctx.reply(`
-✅ Gift Card resgatado!
+db.users[userId].balance =
+Number(db.users[userId].balance || 0) + Number(gift.value)
 
-💰 Valor: ${money(gift.value)}
+gift.used = true
+gift.usedBy = userId
+gift.usedAt = new Date().toLocaleString('pt-BR')
+
+saveDB(db)
+
+ctx.reply(`
+✅ GIFT CARD RESGATADO!
+
+🎁 Código: ${gift.code}
+💰 Valor recebido: ${money(gift.value)}
 💵 Saldo atual: ${money(db.users[userId].balance)}
 `)
 })
