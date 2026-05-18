@@ -45,89 +45,25 @@ function money(value) {
   return `R$ ${Number(value).toFixed(2).replace('.', ',')}`
 }
 
+// MENU PRINCIPAL
 function mainMenu() {
-  return Markup.inlineKeyboard([
-    [Markup.button.callback('🛒 Comprar Produtos', 'menu_products')],
-    [Markup.button.callback('💰 Adicionar Saldo', 'menu_add_balance')],
-    [Markup.button.callback('📦 Minhas Compras', 'menu_my_orders')],
-    [Markup.button.callback('📞 Suporte', 'menu_support')]
-  ])
-}
-
-function adminMenu() {
-  return Markup.inlineKeyboard([
-    [Markup.button.callback('📊 Vendas', 'admin_sales')],
-    [Markup.button.callback('➕ Add Produto', 'admin_help_add_product')],
-    [Markup.button.callback('📦 Ver Produtos', 'menu_products')]
-  ])
-}
-
-bot.start(async (ctx) => {
-  const db = loadDB()
-  const user = getUser(db, ctx.from.id)
-
-  await ctx.reply(
-`🤩 Bem-vindo à melhor loja de streamings do Telegram! ✨
-🎬 Logins rápidos, seguros e pelo melhor preço!
-
-❗️Não encontrou o login que procura?
-Entre em contato com nosso suporte, estamos à disposição para te ajudar! 😊
-
-⏳ Suporte disponível em até 24h! 🕒
-
-ℹ️ Seus Dados:
-🆔 ID: ${ctx.from.id}
-💰 Saldo Atual: ${money(user.balance)}
-🏆 Bônus De Indicação: R$ 0,00`,
-    {
-      reply_markup: {
-        keyboard: [
-          ['🛒 MENU PRINCIPAL '],
-          ['👤 PERFIL', '💰 ADICIONAR SALDO'],
-          ['🏆 RANKING'],
-          ['👨🏻‍💻 SUPORTE', '📍 ALUGAR BOT'],
-          ['🔎 PESQUISAR SERVIÇO'],
-         
-        ],
-        resize_keyboard: true
-      }
+  return {
+    reply_markup: {
+      keyboard: [
+        ['🎬 MENU PRINCIPAL'],
+        ['👤 PERFIL', '💰 ADICIONAR SALDO'],
+        ['🏆 RANKING'],
+        ['👨🏻‍💻 SUPORTE', '📍 ALUGAR BOT'],
+        ['🔎 PESQUISAR SERVIÇO']
+      ],
+      resize_keyboard: true
     }
-  )
-})
-bot.command('menu', (ctx) => {
-  const db = loadDB()
-  const user = getUser(db, ctx.from.id)
-
-  ctx.reply(`🏠 Menu principal\n💰 Saldo: ${money(user.balance)}`, mainMenu())
-})
-
-bot.command('meuid', (ctx) => {
-  ctx.reply(`🆔 Seu ID é: ${ctx.from.id}`)
-})
-
-bot.command(['admin', 'adm'], (ctx) => {
-  if (String(ctx.from.id) !== ADMIN_ID) {
-    return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
   }
+}
 
-  return ctx.reply(`
-👑 PAINEL ADMIN
-
-📦 Adicionar Produto
-📥 Adicionar Estoque
-🛒 Meus Pedidos / Vendas
-📋 Listar Produtos
-✏️ Editar Produto
-🗑 Remover Produto
-💰 Adicionar Saldo Manual
-👤 Ver Clientes
-👥 Afiliados
-
-📢 Enviar Aviso
-🎟 Criar Cupom
-📊 Estatísticas
-⚙️ Configurações
-`, {
+// PAINEL ADMIN
+function adminMenu() {
+  return {
     reply_markup: {
       keyboard: [
         ['📦 Adicionar Produto'],
@@ -142,14 +78,42 @@ bot.command(['admin', 'adm'], (ctx) => {
         ['📢 Enviar Aviso'],
         ['🎟 Criar Cupom'],
         ['📊 Estatísticas'],
-        ['⚙️ Configurações']
+        ['⚙️ Configurações'],
+        ['🔙 Voltar']
       ],
       resize_keyboard: true
     }
-  })
+  }
+}
+
+bot.start(async (ctx) => {
+  const db = loadDB()
+  const user = getUser(db, ctx.from.id)
+
+  ctx.reply(`
+🤩 Bem-vindo à melhor loja de streamings do Telegram! ✨
+🎬 Logins rápidos, seguros e pelo melhor preço!
+
+❗ Não encontrou o login que procura?
+Entre em contato com nosso suporte, estamos à disposição para te ajudar! 😊
+
+⏳ Suporte disponível em até 24h! 🕒
+
+ℹ️ Seus Dados:
+🆔 ID: ${ctx.from.id}
+💰 Saldo Atual: ${money(user.balance)}
+🏆 Bônus De Indicação: R$ 0,00
+`, mainMenu())
 })
 
- bot.command(['admin', 'adm'], (ctx) => {
+bot.command('menu', (ctx) => {
+  const db = loadDB()
+  const user = getUser(db, ctx.from.id)
+
+  ctx.reply(`🏠 Menu principal\n💰 Saldo: ${money(user.balance)}`, mainMenu())
+})
+
+bot.command('admin', (ctx) => {
   if (String(ctx.from.id) !== ADMIN_ID) {
     return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
   }
@@ -171,28 +135,40 @@ bot.command(['admin', 'adm'], (ctx) => {
 🎟 Criar Cupom
 📊 Estatísticas
 ⚙️ Configurações
-`, {
-    reply_markup: {
-      keyboard: [
-        ['📦 Adicionar Produto'],
-        ['📥 Adicionar Estoque'],
-        ['🛒 Meus Pedidos / Vendas'],
-        ['📋 Listar Produtos'],
-        ['✏️ Editar Produto'],
-        ['🗑 Remover Produto'],
-        ['💰 Adicionar Saldo Manual'],
-        ['👤 Ver Clientes'],
-        ['👥 Afiliados'],
-        ['📢 Enviar Aviso'],
-        ['🎟 Criar Cupom'],
-        ['📊 Estatísticas'],
-        ['⚙️ Configurações']
-      ],
-      resize_keyboard: true
-    }
-  })
+`, adminMenu())
 })
 
+bot.command('adm', (ctx) => {
+  if (String(ctx.from.id) !== ADMIN_ID) {
+    return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
+  }
+
+  ctx.reply(`
+👑 PAINEL ADMIN
+
+📦 Adicionar Produto
+📥 Adicionar Estoque
+🛒 Meus Pedidos / Vendas
+📋 Listar Produtos
+✏️ Editar Produto
+🗑 Remover Produto
+💰 Adicionar Saldo Manual
+👤 Ver Clientes
+👥 Afiliados
+
+📢 Enviar Aviso
+🎟 Criar Cupom
+📊 Estatísticas
+⚙️ Configurações
+`, adminMenu())
+})
+
+bot.hears('🔙 Voltar', (ctx) => {
+  const db = loadDB()
+  const user = getUser(db, ctx.from.id)
+
+  ctx.reply(`🏠 Menu principal\n💰 Saldo: ${money(user.balance)}`, mainMenu())
+})
 bot.action('menu_products', async (ctx) => {
   await ctx.answerCbQuery()
   const db = loadDB()
