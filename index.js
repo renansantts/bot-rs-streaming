@@ -363,21 +363,22 @@ bot.hears('🛒 Meus Pedidos / Vendas', (ctx) => {
 
 // 📋 LISTAR PRODUTOS
 bot.hears('📋 Listar Produtos', (ctx) => {
-  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+const db = loadDB()
 
-  const db = garantirDB(loadDB())
-  if (!db.products.length) return ctx.reply('❌ Nenhum produto cadastrado.')
+if (!db.products || db.products.length === 0) {
+return ctx.reply('❌ Nenhum produto cadastrado.')
+}
 
-  let texto = '📋 PRODUTOS CADASTRADOS:\n\n'
+let msg = '📋 LISTA DE PRODUTOS\n\n'
 
-  db.products.forEach((p, i) => {
-    texto += `${i + 1}. ${p.name}\n`
-    texto += `🆔 ID: ${p.id}\n`
-    texto += `💰 Valor: ${money(p.price)}\n`
-    texto += `📥 Estoque: ${p.stock.length}\n\n`
-  })
+db.products.forEach((p) => {
+msg += `🆔 ID: ${p.id}\n`
+msg += `📦 Produto: ${p.name}\n`
+msg += `💰 Valor: ${money(p.price)}\n`
+msg += `📦 Estoque: ${p.stock.length}\n\n`
+})
 
-  ctx.reply(texto)
+ctx.reply(msg)
 })
 
 // ✏️ EDITAR PRODUTO
