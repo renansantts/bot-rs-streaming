@@ -413,21 +413,48 @@ Clique em 💰 adicionar saldo para recarregar.
 
   saveDB(db)
 
-  ctx.reply(`
-✅ COMPRA APROVADA!
+const tela = entrega.tela || 'Acesso único'
 
-📦 Produto: ${produto.name}
-💰 Valor: ${money(produto.price)}
-💳 Saldo atual: ${money(user.balance)}
+const pin = entrega.pin && entrega.pin.toLowerCase() !== 'sem pin'
+? `\n⚠️ PIN ${entrega.pin} ⚠️`
+: ''
 
-🔐 ACESSO AO PRODUTO:
-${entrega}
+ctx.reply(`
+🔰 COMPRA EFETUADA COM SUCESSO 🔰
+├🎟 Serviço: ${produto.name}
+├💸 Valor: ${money(produto.price)}
+└📆 Data Da Compra:
+${new Date().toLocaleString('pt-BR')}
 
-📅 Garantia: 30 dias
-🙏 Obrigado pela compra!
+ℹ️ DADOS:
+├📧 Email: ${entrega.email}
+└🔑 Senha: ${entrega.senha}
+
+APENAS 1 DISPOSITIVO
+
+⚠️ ${tela.toUpperCase()} ⚠️${pin}
+
+❌ NÃO CRIE UM PERFIL
+❌ SE CRIAR PERFIL PERDE O LOGIN
+
+⚠️ ⏰ •|𝗩𝗔𝗟𝗜𝗗𝗔𝗗𝗘: 30 DIAS ⚠️
+
+⚠️ ATENÇÃO NAS REGRAS ⚠️
+❌ ACESSE EM UM DISPOSITIVO SÓ
+❌ NÃO MEXA NOS DADOS DA CONTA
+
+‼️ SE FOR IDENTIFICADO MAIS DE UM APARELHO
+VOCÊ PERDERÁ LOGIN E SUPORTE
+
+═════❖═════
+
+📞 SUPORTE:
+24H a 48H
+
+👥 Grupo suporte:
+https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
 `)
 })
-
   
 bot.hears('💰 ADICIONAR SALDO', async (ctx) => {
 
