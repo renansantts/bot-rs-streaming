@@ -618,10 +618,10 @@ bot.hears(/Gift Card/i, (ctx) => {
 /gift CODIGO VALOR
 
 Exemplo:
-/gift RS50 50
+/gift R$50 50
 
 Cliente resgata com:
-/resgatar RS50
+/resgatar R$50
 `)
 })
 bot.command('resgatar', (ctx) => {
