@@ -83,8 +83,7 @@ function adminMenu() {
         ['👤 Ver Clientes'],
         ['👥 Afiliados'],
         ['📢 Enviar Aviso'],
-        ['🎟 Criar Cupom'],
-['🎁 Gift Card'],
+        ['🎁 Gift Card'],
         ['📊 Estatísticas'],
         ['⚙️ Configurações'],
         ['🔙 Voltar']
@@ -543,22 +542,16 @@ bot.command('aviso', async (ctx) => {
 
 // 🎁 GIFT CARD
 bot.command('resgatar', (ctx) => {
-  const db = garantirDB(loadDB())
+const db = garantirDB(loadDB())
 
-  const codigo = ctx.message.text
-    .replace('/resgatar', '')
-    .trim()
-    .toUpperCase()
+const codigo = ctx.message.text
+.replace('/resgatar', '')
+.trim()
+.toUpperCase()
 
-  if (!codigo) {
-    return ctx.reply('❌ Informe o código do Gift Card.')
-  }
-
-  const gift = db.gifts.find(g => g.code === codigo)
-
-  if (!gift) return ctx.reply('❌ Gift Card inválido.')
-  if (gift.used) return ctx.reply('❌ Esse Gift Card já foi usado.')
-
+if (!codigo) {
+return ctx.reply('❌ Informe o código do Gift Card.')
+}
   const userId = String(ctx.from.id)
 
   if (!db.users[userId]) {
