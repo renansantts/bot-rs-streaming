@@ -223,9 +223,84 @@ bot.hears('⚙️ Configurações', (ctx) => {
 
 bot.hears('🔙 Voltar', (ctx) => {
   const db = loadDB()
-  const user = getUser(db, ctx.from.id)
 
   ctx.reply(`🏠 Menu principal\n💰 Saldo: ${money(user.balance)}`, mainMenu())
+})
+bot.hears('📋 Listar Produtos', (ctx) => {
+    const db = loadDB()
+
+    if (!db.products.length) {
+        return ctx.reply('❌ Nenhum produto cadastrado.')
+    }
+
+    let texto = '📋 PRODUTOS CADASTRADOS:\n\n'
+
+    db.products.forEach((p, i) => {
+        texto += `${i + 1}. ${p.name}\n`
+        texto += `💰 Valor: ${money(p.price)}\n`
+        texto += `📦 Estoque: ${p.stock.length}\n\n`
+    })
+
+    ctx.reply(texto)
+})
+
+
+// VER CLIENTES
+bot.hears('👤 Ver Clientes', (ctx) => {
+    const db = loadDB()
+
+    if (!db.users.length) {
+        return ctx.reply('❌ Nenhum cliente encontrado.')
+    }
+
+    let texto = '👤 CLIENTES:\n\n'
+
+    db.users.forEach((u, i) => {
+        texto += `${i + 1}. ID: ${u.id}\n`
+        texto += `💰 Saldo: ${money(u.balance)}\n\n`
+    })
+
+    ctx.reply(texto)
+})
+
+
+// ESTATÍSTICAS
+bot.hears('📊 Estatísticas', (ctx) => {
+    const db = loadDB()
+
+    const totalProdutos = db.products.length
+    const totalClientes = db.users.length
+
+    ctx.reply(
+`📊 ESTATÍSTICAS DO BOT
+
+📦 Produtos: ${totalProdutos}
+👤 Clientes: ${totalClientes}`
+    )
+})
+
+
+// AFILIADOS
+bot.hears('👥 Afiliados', (ctx) => {
+    ctx.reply('👥 Painel de afiliados em desenvolvimento.')
+})
+
+
+// CRIAR CUPOM
+bot.hears('🎟 Criar Cupom', (ctx) => {
+    ctx.reply('🎟 Sistema de cupons em desenvolvimento.')
+})
+
+
+// CONFIGURAÇÕES
+bot.hears('⚙️ Configurações', (ctx) => {
+    ctx.reply('⚙️ Painel de configurações.')
+})
+
+
+// ENVIAR AVISO
+bot.hears('📢 Enviar Aviso', (ctx) => {
+    ctx.reply('📢 Sistema de avisos.')
 })
 bot.action('menu_products', async (ctx) => {
   await ctx.answerCbQuery()
