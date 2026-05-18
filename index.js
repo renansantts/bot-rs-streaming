@@ -61,6 +61,10 @@ function mainMenu() {
   }
 }
 
+bot.hears('🎬 MENU PRINCIPAL', (ctx) => {
+  mostrarProdutos(ctx)
+})
+
 // PAINEL ADMIN
 function adminMenu() {
   return {
