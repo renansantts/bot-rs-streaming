@@ -83,7 +83,8 @@ function adminMenu() {
         ['👤 Ver Clientes'],
         ['👥 Afiliados'],
         ['📢 Enviar Aviso'],
-        ['🎁 Gift Card'],
+        ['🎟 Criar Cupom'],
+['🎁 Gift Card'],
         ['📊 Estatísticas'],
         ['⚙️ Configurações'],
         ['🔙 Voltar']
@@ -541,19 +542,46 @@ bot.command('aviso', async (ctx) => {
 })
 
 // 🎁 GIFT CARD
-bot.hears('🎁 Gift Card', (ctx) => {
-  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+bot.command('resgatar', (ctx) => {
+  const db = garantirDB(loadDB())
+
+  const codigo = ctx.message.text
+    .replace('/resgatar', '')
+    .trim()
+    .toUpperCase()
+
+  if (!codigo) {
+    return ctx.reply('❌ Informe o código do Gift Card.')
+  }
+
+  const gift = db.gifts.find(g => g.code === codigo)
+
+  if (!gift) return ctx.reply('❌ Gift Card inválido.')
+  if (gift.used) return ctx.reply('❌ Esse Gift Card já foi usado.')
+
+  const userId = String(ctx.from.id)
+
+  if (!db.users[userId]) {
+    db.users[userId] = {
+      id: userId,
+      balance: 0
+    }
+  }
+
+  db.users[userId].balance += Number(gift.value)
+
+  gift.used = true
+  gift.usedBy = userId
+  gift.usedAt = new Date().toLocaleString('pt-BR')
+
+  saveDB(db)
 
   ctx.reply(`
-🎁 Para criar Gift Card:
+✅ GIFT CARD RESGATADO!
 
-/gift CODIGO VALOR
-
-Exemplo:
-/gift RS50 50
-
-Cliente resgata com:
-/resgatar RS50
+🎁 Código: ${gift.code}
+💰 Valor recebido: ${money(gift.value)}
+💵 Saldo atual: ${money(db.users[userId].balance)}
 `)
 })
 
