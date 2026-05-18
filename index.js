@@ -83,7 +83,7 @@ function adminMenu() {
         ['👤 Ver Clientes'],
         ['👥 Afiliados'],
         ['📢 Enviar Aviso'],
-        ['🎟 Criar Cupom'],
+        ['🎁 Gift Card'],
         ['📊 Estatísticas'],
         ['⚙️ Configurações'],
         ['🔙 Voltar']
@@ -139,7 +139,7 @@ bot.command('admin', (ctx) => {
 👥 Afiliados
 
 📢 Enviar Aviso
-🎟 Criar Cupom
+🎁 Gift Card
 📊 Estatísticas
 ⚙️ Configurações
 `, adminMenu())
@@ -167,7 +167,7 @@ Escolha uma opção abaixo:
                 ['👤 Ver Clientes'],
                 ['👥 Afiliados'],
                 ['📢 Enviar Aviso'],
-                ['🎟 Criar Cupom'],
+                ['🎁 Gift Card'],
                 ['📊 Estatísticas'],
                 ['⚙️ Configurações'],
                 ['🔙 Voltar']
