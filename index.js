@@ -582,7 +582,7 @@ ctx.reply(`
 bot.command('gift', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = garantirDB(loadDB())
+  const db = loadDB()
   const partes = ctx.message.text.split(' ')
   const codigo = partes[1]?.toUpperCase()
   const valor = Number((partes[2] || '').replace(',', '.'))
