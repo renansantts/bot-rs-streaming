@@ -553,16 +553,17 @@ const gift = db.gifts.find(g => g.code === codigo)
 
 if (!gift) return ctx.reply('❌ Gift Card inválido.')
 if (gift.used) return ctx.reply('❌ Esse Gift Card já foi usado.')
-  const userId = String(ctx.from.id)
 
-  if (!db.users[userId]) {
-    db.users[userId] = {
-      id: userId,
-      balance: 0
-    }
+const userId = String(ctx.from.id)
+if (!db.users[userId]) {
+  db.users[userId] = {
+    id: userId,
+    balance: 0,
+    purchases: []
   }
+}
 
- db.users[userId].balance += Number(gift.value)
+db.users[userId].balance = Number(db.users[userId].balance || 0) + Number(gift.value)
 
 gift.used = true
 gift.usedBy = userId
@@ -577,8 +578,8 @@ ctx.reply(`
 💰 Valor recebido: ${money(gift.value)}
 💵 Saldo atual: ${money(db.users[userId].balance)}
 `)
-})
 
+})
 bot.command('gift', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
