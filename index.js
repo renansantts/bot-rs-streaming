@@ -241,61 +241,93 @@ bot.command('addproduto', (ctx) => {
 // =========================
 // LISTAR PRODUTOS
 // =========================
+bot.hears('📦 Adicionar Produto', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-bot.hears('📋 Listar Produtos', (ctx) => {
-  const db = loadDB()
-
-  if (!db.products || db.products.length === 0) {
-    return ctx.reply('❌ Nenhum produto cadastrado.')
-  }
-
-  let texto = '📋 PRODUTOS:\n\n'
-
-  db.products.forEach((p, i) => {
-    texto += `${i + 1}. ${p.name}\n`
-    texto += `💰 Valor: R$ ${p.price}\n`
-    texto += `📦 Estoque: ${p.stock.length}\n\n`
-  })
-
-  ctx.reply(texto)
-})
-
-// =========================
-// ADICIONAR ESTOQUE
-// =========================
-
-bot.hears('📥 Adicionar Estoque', (ctx) => {
   ctx.reply(`
-📥 ENVIE:
+📦 Para adicionar produto com estoque junto:
 
-/estoque ID|login:senha
+/addproduto Nome|Valor|Email|Senha|Tela|PIN|Descrição
 
 Exemplo:
-/estoque 123456|email@gmail.com:123456
+/addproduto Disney Privada|9|email@gmail.com|senha123|Tela 1|sem pin|APENAS 1 DISPOSITIVO
+`)
+})
+
+bot.command('addproduto', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  const db = garantirDB(loadDB())
+  const text = ctx.message.text.replace('/addproduto', '').trim()
+  const [name, priceText, email, senha, tela, pin, descricao] = text.split('|')
+
+  if (!name || !priceText || !email || !senha) {
+    return ctx.reply('❌ Use: /addproduto Nome|Valor|Email|Senha|Tela|PIN|Descrição')
+  }
+
+  const price = Number(priceText.replace(',', '.'))
+  if (!price) return ctx.reply('❌ Valor inválido.')
+
+  const produto = {
+    id: Date.now().toString(),
+    name: name.trim(),
+    price,
+    description: descricao ? descricao.trim() : '',
+    stock: [{
+      email: email.trim(),
+      senha: senha.trim(),
+      tela: tela ? tela.trim() : 'Acesso único',
+      pin: pin ? pin.trim() : 'sem pin'
+    }]
+  }
+
+  db.products.push(produto)
+  saveDB(db)
+
+  ctx.reply(`
+✅ PRODUTO ADICIONADO
+
+🆔 ID: ${produto.id}
+📦 Produto: ${produto.name}
+💰 Valor: ${money(produto.price)}
+📥 Estoque: ${produto.stock.length}
+`)
+})
+
+// 📥 ADICIONAR ESTOQUE
+bot.hears('📥 Adicionar Estoque', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  ctx.reply(`
+📥 Para adicionar estoque:
+
+/estoque ID|Email|Senha|Tela|PIN
+
+Exemplo:
+/estoque 123456|email@gmail.com|senha123|Tela 2|2222
 `)
 })
 
 bot.command('estoque', (ctx) => {
-  const db = loadDB()
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
+  const db = garantirDB(loadDB())
   const text = ctx.message.text.replace('/estoque', '').trim()
+  const [id, email, senha, tela, pin] = text.split('|')
 
-  const partes = text.split('|')
-
-  if (partes.length < 2) {
-    return ctx.reply('❌ Use: /estoque ID|login:senha')
+  if (!id || !email || !senha) {
+    return ctx.reply('❌ Use: /estoque ID|Email|Senha|Tela|PIN')
   }
 
-  const id = partes[0]
-  const login = partes[1]
+  const produto = db.products.find((p, i) => p.id == id.trim() || String(i + 1) == id.trim())
+  if (!produto) return ctx.reply('❌ Produto não encontrado.')
 
-  const produto = db.products.find(p => p.id == id)
-
-  if (!produto) {
-    return ctx.reply('❌ Produto não encontrado.')
-  }
-
-  produto.stock.push(login)
+  produto.stock.push({
+    email: email.trim(),
+    senha: senha.trim(),
+    tela: tela ? tela.trim() : 'Acesso único',
+    pin: pin ? pin.trim() : 'sem pin'
+  })
 
   saveDB(db)
 
@@ -307,56 +339,309 @@ bot.command('estoque', (ctx) => {
 `)
 })
 
-// =========================
-// VER CLIENTES
-// =========================
+// 🛒 MEUS PEDIDOS / VENDAS
+bot.hears('🛒 Meus Pedidos / Vendas', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-bot.hears('👤 Ver Clientes', (ctx) => {
-  const db = loadDB()
+  const db = garantirDB(loadDB())
+  if (!db.sales.length) return ctx.reply('❌ Nenhuma venda realizada ainda.')
 
-  if (!db.users || db.users.length === 0) {
-    return ctx.reply('❌ Nenhum cliente.')
-  }
+  let texto = '🛒 VENDAS REALIZADAS:\n\n'
 
-  let texto = '👤 CLIENTES:\n\n'
-
-  db.users.forEach((u, i) => {
-    texto += `${i + 1}. ID: ${u.id}\n`
-    texto += `💰 Saldo: ${u.balance}\n\n`
+  db.sales.forEach((v, i) => {
+    texto += `${i + 1}. ${v.product}\n`
+    texto += `👤 Cliente: ${v.userId}\n`
+    texto += `💰 Valor: ${money(v.price)}\n`
+    texto += `📅 Data: ${v.date}\n\n`
   })
 
   ctx.reply(texto)
 })
 
-// =========================
-// ESTATÍSTICAS
-// =========================
+// 📋 LISTAR PRODUTOS
+bot.hears('📋 Listar Produtos', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
+  const db = garantirDB(loadDB())
+  if (!db.products.length) return ctx.reply('❌ Nenhum produto cadastrado.')
+
+  let texto = '📋 PRODUTOS CADASTRADOS:\n\n'
+
+  db.products.forEach((p, i) => {
+    texto += `${i + 1}. ${p.name}\n`
+    texto += `🆔 ID: ${p.id}\n`
+    texto += `💰 Valor: ${money(p.price)}\n`
+    texto += `📥 Estoque: ${p.stock.length}\n\n`
+  })
+
+  ctx.reply(texto)
+})
+
+// ✏️ EDITAR PRODUTO
+bot.hears('✏️ Editar Produto', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  ctx.reply(`
+✏️ Para editar produto:
+
+/editarproduto ID|Novo Nome|Novo Valor
+
+Exemplo:
+/editarproduto 123456|Disney Premium|12
+`)
+})
+
+bot.command('editarproduto', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  const db = garantirDB(loadDB())
+  const text = ctx.message.text.replace('/editarproduto', '').trim()
+  const [id, name, priceText] = text.split('|')
+
+  if (!id || !name || !priceText) {
+    return ctx.reply('❌ Use: /editarproduto ID|Novo Nome|Novo Valor')
+  }
+
+  const produto = db.products.find((p, i) => p.id == id.trim() || String(i + 1) == id.trim())
+  if (!produto) return ctx.reply('❌ Produto não encontrado.')
+
+  produto.name = name.trim()
+  produto.price = Number(priceText.replace(',', '.'))
+
+  saveDB(db)
+
+  ctx.reply(`✅ Produto editado: ${produto.name}`)
+})
+
+// 🗑 REMOVER PRODUTO
+bot.hears('🗑 Remover Produto', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  ctx.reply(`
+🗑 Para remover produto:
+
+/removerproduto ID
+`)
+})
+
+bot.command('removerproduto', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  const db = garantirDB(loadDB())
+  const id = ctx.message.text.replace('/removerproduto', '').trim()
+
+  const index = db.products.findIndex((p, i) => p.id == id || String(i + 1) == id)
+  if (index === -1) return ctx.reply('❌ Produto não encontrado.')
+
+  const removido = db.products.splice(index, 1)[0]
+  saveDB(db)
+
+  ctx.reply(`✅ Produto removido: ${removido.name}`)
+})
+
+// 💰 ADICIONAR SALDO MANUAL
+bot.hears('💰 Adicionar Saldo Manual', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  ctx.reply(`
+💰 Para adicionar saldo:
+
+/saldo ID VALOR
+
+Exemplo:
+/saldo 123456789 20
+`)
+})
+
+bot.command('saldo', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  const db = garantirDB(loadDB())
+  const partes = ctx.message.text.split(' ')
+  const userId = partes[1]
+  const valor = Number((partes[2] || '').replace(',', '.'))
+
+  if (!userId || !valor) return ctx.reply('❌ Use: /saldo ID VALOR')
+
+  if (!db.users[userId]) db.users[userId] = { id: userId, balance: 0 }
+
+  db.users[userId].balance += valor
+  saveDB(db)
+
+  ctx.reply(`✅ Saldo adicionado: ${money(valor)}`)
+})
+
+// 👤 VER CLIENTES
+bot.hears('👤 Ver Clientes', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  const db = garantirDB(loadDB())
+  const users = Object.values(db.users)
+
+  if (!users.length) return ctx.reply('❌ Nenhum cliente cadastrado.')
+
+  let texto = '👤 CLIENTES:\n\n'
+
+  users.forEach((u, i) => {
+    texto += `${i + 1}. ID: ${u.id}\n`
+    texto += `💰 Saldo: ${money(u.balance || 0)}\n\n`
+  })
+
+  ctx.reply(texto)
+})
+
+// 👥 AFILIADOS
+bot.hears('👥 Afiliados', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  const db = garantirDB(loadDB())
+
+  ctx.reply(`
+👥 SISTEMA DE AFILIADOS
+
+👤 Clientes cadastrados: ${Object.keys(db.users).length}
+💰 Comissão padrão: 35%
+📌 Sistema base ativo.
+`)
+})
+
+// 📢 ENVIAR AVISO
+bot.hears('📢 Enviar Aviso', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  ctx.reply(`
+📢 Para enviar aviso:
+
+/aviso Sua mensagem aqui
+`)
+})
+
+bot.command('aviso', async (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  const db = garantirDB(loadDB())
+  const mensagem = ctx.message.text.replace('/aviso', '').trim()
+
+  if (!mensagem) return ctx.reply('❌ Use: /aviso Sua mensagem')
+
+  let enviados = 0
+
+  for (const id of Object.keys(db.users)) {
+    try {
+      await ctx.telegram.sendMessage(id, `📢 AVISO DA LOJA\n\n${mensagem}`)
+      enviados++
+    } catch (e) {}
+  }
+
+  ctx.reply(`✅ Aviso enviado para ${enviados} cliente(s).`)
+})
+
+// 🎁 GIFT CARD
+bot.hears('🎁 Gift Card', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  ctx.reply(`
+🎁 Para criar Gift Card:
+
+/gift CODIGO VALOR
+
+Exemplo:
+/gift RS50 50
+
+Cliente resgata com:
+/resgatar RS50
+`)
+})
+
+bot.command('gift', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+  const db = garantirDB(loadDB())
+  const partes = ctx.message.text.split(' ')
+  const codigo = partes[1]?.toUpperCase()
+  const valor = Number((partes[2] || '').replace(',', '.'))
+
+  if (!codigo || !valor) return ctx.reply('❌ Use: /gift CODIGO VALOR')
+
+  if (db.gifts.find(g => g.code === codigo)) {
+    return ctx.reply('❌ Esse Gift Card já existe.')
+  }
+
+  db.gifts.push({
+    code: codigo,
+    value: valor,
+    used: false,
+    createdAt: new Date().toLocaleString('pt-BR')
+  })
+
+  saveDB(db)
+
+  ctx.reply(`
+✅ Gift Card criado!
+
+🎁 Código: ${codigo}
+💰 Valor: ${money(valor)}
+`)
+})
+
+bot.command('resgatar', (ctx) => {
+  const db = garantirDB(loadDB())
+  const codigo = ctx.message.text.replace('/resgatar', '').trim().toUpperCase()
+
+  const gift = db.gifts.find(g => g.code === codigo)
+  if (!gift) return ctx.reply('❌ Gift Card inválido.')
+  if (gift.used) return ctx.reply('❌ Esse Gift Card já foi usado.')
+
+  const userId = String(ctx.from.id)
+
+  if (!db.users[userId]) db.users[userId] = { id: userId, balance: 0 }
+
+  db.users[userId].balance += gift.value
+  gift.used = true
+  gift.usedBy = userId
+  gift.usedAt = new Date().toLocaleString('pt-BR')
+
+  saveDB(db)
+
+  ctx.reply(`
+✅ Gift Card resgatado!
+
+💰 Valor: ${money(gift.value)}
+💵 Saldo atual: ${money(db.users[userId].balance)}
+`)
+})
+
+// 📊 ESTATÍSTICAS
 bot.hears('📊 Estatísticas', (ctx) => {
-  const db = loadDB()
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const totalProdutos = db.products ? db.products.length : 0
-  const totalClientes = db.users ? db.users.length : 0
+  const db = garantirDB(loadDB())
+
+  const totalVendido = db.sales.reduce((s, v) => s + Number(v.price || 0), 0)
 
   ctx.reply(`
 📊 ESTATÍSTICAS
 
-📦 Produtos: ${totalProdutos}
-👤 Clientes: ${totalClientes}
+📦 Produtos: ${db.products.length}
+👤 Clientes: ${Object.keys(db.users).length}
+🛒 Vendas: ${db.sales.length}
+💰 Total vendido: ${money(totalVendido)}
+🎁 Gift Cards: ${db.gifts.length}
 `)
 })
 
-// =========================
-// CONFIGURAÇÕES
-// =========================
-
+// ⚙️ CONFIGURAÇÕES
 bot.hears('⚙️ Configurações', (ctx) => {
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
   ctx.reply(`
 ⚙️ CONFIGURAÇÕES
 
 🏪 Loja: RS Streaming
 💳 Pagamento: Mercado Pago
 🚀 Entrega: Automática
+🎁 Gift Card: Ativo
+🕒 Suporte: 24h a 48h
 `)
 })
 bot.action('menu_products', async (ctx) => {
