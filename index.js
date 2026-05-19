@@ -104,7 +104,7 @@ bot.start(async (ctx) => {
 ❗ Não encontrou o login que procura?
 Entre em contato com nosso suporte, estamos à disposição para te ajudar! 😊
 
-⏳ Suporte disponível em até 24h! 🕒
+⏳ Suporte disponível de 24h a 48h! 🕒
 
 ℹ️ Seus Dados:
 🆔 ID: ${ctx.from.id}
