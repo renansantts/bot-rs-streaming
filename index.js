@@ -905,7 +905,22 @@ bot.action('menu_my_orders', async (ctx) => {
 
 bot.action('menu_support', async (ctx) => {
   await ctx.answerCbQuery()
-  ctx.reply('📞 Suporte: chame o ADM no WhatsApp/Telegram.\n\nColoque aqui seu contato oficial.')
+
+  ctx.reply(`
+🛠️ SUPORTE RS STREAMING
+
+⏰ Atendimento: 24H até 48H
+
+📲 ENTRE NO GRUPO DE SUPORTE:
+https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
+
+⚠️ Após entrar no grupo:
+• Marque o ADM
+• Envie seu problema
+• Envie print do erro
+
+💙 RS Streaming
+`)
 })
 
 bot.hears('👤 PERFIL', async (ctx) => {
