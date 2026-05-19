@@ -940,6 +940,102 @@ https://chat.whatsapp.com/Iu0Qb614sFoEuPW6CNz6wX
 💙 RS Streaming
 `)
 })
+function nomeUser(u) {
+  return u.name || u.first_name || u.username || 'Cliente'
+}
+
+function topRanking(db, campo, titulo, emoji, textoValor) {
+  if (!db.users) db.users = {}
+
+  const ranking = Object.values(db.users)
+    .sort((a, b) => Number(b[campo] || 0) - Number(a[campo] || 0))
+    .slice(0, 10)
+
+  if (!ranking.length || Number(ranking[0][campo] || 0) === 0) {
+    return `❌ Ainda não há dados nesse ranking.`
+  }
+
+  return ranking.map((u, i) => {
+    return `🟢 TOP ${i + 1}
+👤 ${nomeUser(u)}
+${emoji} ${textoValor}: ${campo.includes('qtd') || campo.includes('ativos') ? Number(u[campo] || 0) : money(u[campo] || 0)}`
+  }).join('\n\n')
+}
+
+bot.hears('🏆 RANKING', async (ctx) => {
+  ctx.reply(`📊 Selecione o tipo de ranking que deseja visualizar:`, {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: '🟢 Top Saldo', callback_data: 'rank_saldo' },
+          { text: '🟢 Top Depósitos', callback_data: 'rank_depositos' }
+        ],
+        [
+          { text: '🟢 Recargas (30d)', callback_data: 'rank_recargas' },
+          { text: '🟢 Vendas (30d)', callback_data: 'rank_vendas' }
+        ],
+        [
+          { text: '🟢 Compras (30d)', callback_data: 'rank_compras' },
+          { text: '🟢 Mais Ativos', callback_data: 'rank_ativos' }
+        ],
+        [
+          { text: '🟢 Média de Compra', callback_data: 'rank_media' }
+        ]
+      ]
+    }
+  })
+})
+
+bot.action('rank_saldo', async (ctx) => {
+  await ctx.answerCbQuery()
+  const db = loadDB()
+  ctx.reply(`🏆 TOP SALDO\n\n${topRanking(db, 'balance', 'Top Saldo', '💰', 'Saldo')}`)
+})
+
+bot.action('rank_depositos', async (ctx) => {
+  await ctx.answerCbQuery()
+  const db = loadDB()
+  ctx.reply(`🏦 TOP DEPÓSITOS\n\n${topRanking(db, 'totalDepositos', 'Top Depósitos', '💵', 'Total depositado')}`)
+})
+
+bot.action('rank_recargas', async (ctx) => {
+  await ctx.answerCbQuery()
+  const db = loadDB()
+  ctx.reply(`📲 TOP RECARGAS\n\n${topRanking(db, 'totalRecargas', 'Top Recargas', '📲', 'Total em recargas')}`)
+})
+
+bot.action('rank_vendas', async (ctx) => {
+  await ctx.answerCbQuery()
+  const db = loadDB()
+  ctx.reply(`🛒 TOP VENDAS\n\n${topRanking(db, 'totalVendas', 'Top Vendas', '💸', 'Total vendido')}`)
+})
+
+bot.action('rank_compras', async (ctx) => {
+  await ctx.answerCbQuery()
+  const db = loadDB()
+  ctx.reply(`🛍️ TOP COMPRAS\n\n${topRanking(db, 'totalCompras', 'Top Compras', '🛒', 'Total comprado')}`)
+})
+
+bot.action('rank_ativos', async (ctx) => {
+  await ctx.answerCbQuery()
+  const db = loadDB()
+  ctx.reply(`🔥 MAIS ATIVOS\n\n${topRanking(db, 'totalAtividades', 'Mais Ativos', '⚡', 'Atividades')}`)
+})
+
+bot.action('rank_media', async (ctx) => {
+  await ctx.answerCbQuery()
+  const db = loadDB()
+
+  if (!db.users) db.users = {}
+
+  Object.values(db.users).forEach(u => {
+    u.mediaCompra = Number(u.qtdCompras || 0) > 0
+      ? Number(u.totalCompras || 0) / Number(u.qtdCompras || 1)
+      : 0
+  })
+
+  ctx.reply(`📈 MÉDIA DE COMPRA\n\n${topRanking(db, 'mediaCompra', 'Média de Compra', '📊', 'Média')}`)
+})
 bot.hears('👤 PERFIL', async (ctx) => {
 
 const db = loadDB()
