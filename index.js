@@ -579,10 +579,14 @@ ctx.reply(`
 💳 Saldo atual: ${money(db.users[userId].balance)}
 `)
 })
-bot.command('gift', (ctx) => {
-  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = loadDB()
+  bot.command('gift', (ctx) => {
+const db = loadDB()
+
+if (!db.gifts) db.gifts = []
+if (!db.users) db.users = {}
+
+  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
   const partes = ctx.message.text.split(' ')
   const codigo = partes[1]?.toUpperCase()
   const valor = Number((partes[2] || '').replace(',', '.'))
@@ -610,7 +614,12 @@ bot.command('gift', (ctx) => {
 `)
 })
 bot.hears(/Gift Card/i, (ctx) => {
-  if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
+
+const db = loadDB()
+
+if (!db.gifts) db.gifts = []
+if (!db.users) db.users = {}
 
   ctx.reply(`
 🎁 Para criar Gift Card:
