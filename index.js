@@ -573,7 +573,7 @@ gift.usedAt = new Date().toLocaleString('pt-BR')
 saveDB(db)
 
 ctx.reply(`
-✅ GIFT CARD RESGATADO!
+✅ GIFT CARD RESGATADO
 
 🎁 Código: ${gift.code}
 💰 Valor recebido: ${money(gift.value)}
@@ -635,7 +635,10 @@ Cliente resgata com:
 `)
 })
 bot.command('resgatar', (ctx) => {
-const db = loadDB()
+  const db = loadDB()
+
+  if (!db.gifts) db.gifts = []
+  if (!db.users) db.users = {}
 
 const codigo = ctx.message.text
 .replace('/resgatar', '')
