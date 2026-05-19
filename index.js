@@ -260,7 +260,7 @@ Exemplo:
 bot.command('addproduto', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = garantirDB(loadDB())
+  const db = loadDB()
   const text = ctx.message.text.replace('/addproduto', '').trim()
   const [name, priceText, email, senha, tela, pin, descricao] = text.split('|')
 
@@ -314,7 +314,7 @@ Exemplo:
 bot.command('estoque', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = garantirDB(loadDB())
+  const db = loadDB()
   const text = ctx.message.text.replace('/estoque', '').trim()
   const [id, email, senha, tela, pin] = text.split('|')
 
@@ -346,7 +346,7 @@ bot.command('estoque', (ctx) => {
 bot.hears('🛒 Meus Pedidos / Vendas', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = garantirDB(loadDB())
+  const db = loadDB()
   if (!db.sales.length) return ctx.reply('❌ Nenhuma venda realizada ainda.')
 
   let texto = '🛒 VENDAS REALIZADAS:\n\n'
@@ -398,7 +398,7 @@ Exemplo:
 bot.command('editarproduto', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = garantirDB(loadDB())
+  const db = loadDB()
   const text = ctx.message.text.replace('/editarproduto', '').trim()
   const [id, name, priceText] = text.split('|')
 
@@ -431,7 +431,7 @@ bot.hears('🗑 Remover Produto', (ctx) => {
 bot.command('removerproduto', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = garantirDB(loadDB())
+  const db = loadDB()
   const id = ctx.message.text.replace('/removerproduto', '').trim()
 
   const index = db.products.findIndex((p, i) => p.id == id || String(i + 1) == id)
@@ -460,7 +460,7 @@ Exemplo:
 bot.command('saldo', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = garantirDB(loadDB())
+  const db = loadDB()
   const partes = ctx.message.text.split(' ')
   const userId = partes[1]
   const valor = Number((partes[2] || '').replace(',', '.'))
@@ -479,7 +479,7 @@ bot.command('saldo', (ctx) => {
 bot.hears('👤 Ver Clientes', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = garantirDB(loadDB())
+ const db = loadDB()
   const users = Object.values(db.users)
 
   if (!users.length) return ctx.reply('❌ Nenhum cliente cadastrado.')
@@ -498,7 +498,7 @@ bot.hears('👤 Ver Clientes', (ctx) => {
 bot.hears('👥 Afiliados', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = garantirDB(loadDB())
+ const db = loadDB()
 
   ctx.reply(`
 👥 SISTEMA DE AFILIADOS
@@ -523,7 +523,7 @@ bot.hears('📢 Enviar Aviso', (ctx) => {
 bot.command('aviso', async (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = garantirDB(loadDB())
+  const db = loadDB()
   const mensagem = ctx.message.text.replace('/aviso', '').trim()
 
   if (!mensagem) return ctx.reply('❌ Use: /aviso Sua mensagem')
@@ -625,7 +625,7 @@ Cliente resgata com:
 `)
 })
 bot.command('resgatar', (ctx) => {
-const db = garantirDB(loadDB())
+const db = loadDB()
 
 const codigo = ctx.message.text
 .replace('/resgatar', '')
@@ -669,7 +669,7 @@ ctx.reply(`
 bot.hears('📊 Estatísticas', (ctx) => {
   if (!isAdmin(ctx)) return ctx.reply('❌ Sem permissão.')
 
-  const db = garantirDB(loadDB())
+  const db = loadDB()
 
   const totalVendido = db.sales.reduce((s, v) => s + Number(v.price || 0), 0)
 
