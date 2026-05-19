@@ -1036,6 +1036,61 @@ bot.action('rank_media', async (ctx) => {
 
   ctx.reply(`📈 MÉDIA DE COMPRA\n\n${topRanking(db, 'mediaCompra', 'Média de Compra', '📊', 'Média')}`)
 })
+bot.hears(/ALUGAR BOT/i, async (ctx) => {
+  ctx.reply(`
+🤖 QUER UM BOT DE VENDAS IGUAL A ESTE?
+
+Alugue seu próprio Bot de Vendas no Telegram totalmente automatizado para gerenciar e escalar seu negócio digital com praticidade, segurança e profissionalismo.
+
+━━━━━━━━━━━━━━
+✨ FUNCIONALIDADES
+━━━━━━━━━━━━━━
+
+🛒 Loja completa e intuitiva
+📦 Produtos organizados
+🎁 Sistema de Gift Card
+💰 Sistema de saldo integrado
+⚡ Recarga automática via PIX
+👥 Sistema de afiliados
+🏆 Ranking automático
+📊 Painel administrativo
+📈 Estatísticas completas
+🔒 Bot privado e seguro
+📲 Suporte integrado
+🧾 Histórico de compras
+🔔 Alertas automáticos
+🚀 Entrega automática
+🧠 Pesquisa rápida de produtos
+📌 Personalização completa
+
+━━━━━━━━━━━━━━
+📋 RECURSOS DISPONÍVEIS
+━━━━━━━━━━━━━━
+
+✅ Dashboard completo
+✅ Gestão de usuários
+✅ Controle de estoque
+✅ Painel de expiração
+✅ Sistema de transmissão
+✅ Relatórios avançados
+✅ Sistema de recarga
+✅ Sistema de compras
+✅ Sistema automático de entregas
+
+━━━━━━━━━━━━━━
+📞 CONTRATAR BOT
+━━━━━━━━━━━━━━
+
+📲 ENTRE NO GRUPO:
+https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
+⚠️ Após entrar:
+• Marque o ADM
+• Informe que deseja alugar o bot
+• Aguarde o atendimento
+
+💙 RS Streaming
+`)
+})
 bot.hears('👤 PERFIL', async (ctx) => {
 
 const db = loadDB()
