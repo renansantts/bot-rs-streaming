@@ -777,12 +777,17 @@ ctx.reply(`
 
 🛒 Produto: ${produto.name}
 💰 Valor: ${money(produto.price)}
+
 📅 Data da Compra:
 ${new Date().toLocaleString('pt-BR')}
+
+⏳ Válido Até:
+${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')}
 
 ━━━━━━━━━━━━━━━
 
 🔐 DADOS DE ACESSO
+
 📧 Login: ${entrega.email}
 🔑 Senha: ${entrega.senha}
 
@@ -797,16 +802,11 @@ ${new Date().toLocaleString('pt-BR')}
 
 ━━━━━━━━━━━━━━━
 
-⏳ VALIDADE: 30 Dias
-
-━━━━━━━━━━━━━━━
-
 🛠️ SUPORTE
 
 ⏰ Atendimento de 24H até 48H
-
 📲 Grupo de suporte:
-https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
+https://chaXt.whatsapp.com/IuOQb614sFoEuPW6CNz6w
 ━━━━━━━━━━━━━━━
 
 💙 Obrigado pela preferência!
