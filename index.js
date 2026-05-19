@@ -563,7 +563,8 @@ if (!db.users[userId]) {
   }
 }
 
-db.users[userId].balance = Number(db.users[userId].balance || 0) + Number(gift.value)
+const user = getUser(db, ctx.from.id)
+user.balance = Number(user.balance || 0) + Number(gift.value)
 
 gift.used = true
 gift.usedBy = userId
@@ -576,7 +577,7 @@ ctx.reply(`
 
 🎁 Código: ${gift.code}
 💰 Valor recebido: ${money(gift.value)}
-💳 Saldo atual: ${money(db.users[userId].balance)}
+💳 Saldo atual: $money(user.balance)
 `)
 })
 
@@ -772,39 +773,44 @@ const pin = entrega.pin && entrega.pin.toLowerCase() !== 'sem pin'
 : ''
 
 ctx.reply(`
-🔰 COMPRA EFETUADA COM SUCESSO 🔰
-├🎟 Serviço: ${produto.name}
-├💸 Valor: ${money(produto.price)}
-└📆 Data Da Compra:
+📦 COMPRA REALIZADA COM SUCESSO 📦
+
+🛒 Produto: ${produto.name}
+💰 Valor: ${money(produto.price)}
+📅 Data da Compra:
 ${new Date().toLocaleString('pt-BR')}
 
-ℹ️ DADOS:
-├📧 Email: ${entrega.email}
-└🔑 Senha: ${entrega.senha}
+━━━━━━━━━━━━━━━
 
-APENAS 1 DISPOSITIVO
+🔐 DADOS DE ACESSO
+📧 Login: ${entrega.email}
+🔑 Senha: ${entrega.senha}
 
-⚠️ ${tela.toUpperCase()} ⚠️${pin}
+━━━━━━━━━━━━━━━
 
-❌ NÃO CRIE UM PERFIL
-❌ SE CRIAR PERFIL PERDE O LOGIN
+📱 REGRAS DE USO
 
-⚠️ ⏰ •|𝗩𝗔𝗟𝗜𝗗𝗔𝗗𝗘: 30 DIAS ⚠️
+⚠️ Uso permitido em apenas 1 dispositivo
+⚠️ Não altere e nem remova os dados da conta
+⚠️ Não crie perfil na conta
+⚠️ Caso seja identificado mais de um aparelho, o acesso poderá ser removido sem aviso
 
-⚠️ ATENÇÃO NAS REGRAS ⚠️
-❌ ACESSE EM UM DISPOSITIVO SÓ
-❌ NÃO MEXA NOS DADOS DA CONTA
+━━━━━━━━━━━━━━━
 
-‼️ SE FOR IDENTIFICADO MAIS DE UM APARELHO
-VOCÊ PERDERÁ LOGIN E SUPORTE
+⏳ VALIDADE: 30 Dias
 
-═════❖═════
+━━━━━━━━━━━━━━━
 
-📞 SUPORTE:
-24H a 48H
+🛠️ SUPORTE
 
-👥 Grupo suporte:
+⏰ Atendimento de 24H até 48H
+
+📲 Grupo de suporte:
 https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
+━━━━━━━━━━━━━━━
+
+💙 Obrigado pela preferência!
+A RS Streaming agradece sua compra 🤝
 `)
 })
   
