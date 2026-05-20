@@ -1270,6 +1270,9 @@ bot.action('voltar_produtos', async (ctx) => {
   await ctx.answerCbQuery()
   mostrarProdutos(ctx)
 })
+bot.hears(/⬅️ Voltar|Voltar/i, async (ctx) => {
+  ctx.reply('🏠 Menu principal', mainMenu())
+})
 async function createPixPayment({ amount, userId, description }) {
   const response = await fetch('https://api.mercadopago.com/v1/payments', {
     method: 'POST',
