@@ -1091,7 +1091,22 @@ https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
 💙 RS Streaming
 `)
 })
+bot.hears(/PESQUISAR SERVIÇO/i, async (ctx) => {
+  ctx.reply(`🔎 PESQUISAR SERVIÇO
 
+Clique no botão abaixo para pesquisar:`, {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: '🔎 pesquisar logins',
+            switch_inline_query_current_chat: 'buscar '
+          }
+        ]
+      ]
+    }
+  })
+})
 bot.hears(/^buscar (.+)/i, async (ctx) => {
   const db = loadDB()
   const termo = ctx.match[1].toLowerCase()
