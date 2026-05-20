@@ -816,43 +816,14 @@ https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
 A RS Streaming agradece sua compra 🤝
 `)
 })
-bot.hears(/ADICIONAR SALDO/i, async (ctx) => {
+// ========================================
+// MERCADO PAGO PIX AUTOMÁTICO
+// ========================================
 
-  await ctx.reply(
-`✅ RECARREGAR SALDO
+const mercadopago = require('mercadopago')
 
-Escolha um dos valores rápidos abaixo ou digite um valor personalizado.
-
-📌 Observações:
-- Pagamento apenas por PIX.
-- Mínimo: R$2.00 | Máximo: R$150.00
-- Você pode ganhar bônus dependendo do valor da recarga.`,
-{
-  reply_markup: {
-    inline_keyboard: [
-
-      [
-        { text: 'R$ 10', callback_data: 'pix_10' },
-        { text: 'R$ 20', callback_data: 'pix_20' }
-      ],
-
-      [
-        { text: 'R$ 50', callback_data: 'pix_50' },
-        { text: 'R$ 100', callback_data: 'pix_100' }
-      ],
-
-      [
-        { text: '⌨️ Digitar Outro Valor', callback_data: 'pix_custom' }
-      ],
-
-      [
-        { text: '⬅️ Retornar', callback_data: 'voltar_menu' }
-      ]
-
-    ]
-  }
-})
-
+mercadopago.configure({
+  access_token: process.env.MP_ACCESS_TOKEN
 })
 
 // ========================================
@@ -863,38 +834,32 @@ async function gerarPix(ctx, valor) {
 
   try {
 
-    await ctx.reply(`⏳ Gerando PIX de R$${valor}, aguarde...`)
-
-    const pagamento = await mercadopago.payment.create({
-
+    const payment_data = {
       transaction_amount: Number(valor),
-
-      description: `Recarga de saldo R$${valor}`,
-
+      description: `Recarga RS Streaming`,
       payment_method_id: 'pix',
-
       payer: {
-        email: 'cliente@email.com'
+        email: `cliente${ctx.from.id}@gmail.com`
       }
+    }
 
-    })
+    const pagamento = await mercadopago.payment.create(payment_data)
 
     const pix = pagamento.body.point_of_interaction.transaction_data
 
     await ctx.replyWithPhoto(
       {
-        source: Buffer.from(
-          pix.qr_code_base64,
-          'base64'
-        )
+        source: Buffer.from(pix.qr_code_base64, 'base64')
       },
       {
         caption:
 `✅ PIX GERADO COM SUCESSO
 
-💰 Valor: R$ ${valor}
+💰 Valor: R$${valor}
 
-📌 Pague usando o QR Code acima.`
+📌 Após o pagamento o saldo será adicionado automaticamente.
+
+⏳ Aguarde a confirmação automática.`
       }
     )
 
@@ -904,64 +869,125 @@ async function gerarPix(ctx, valor) {
 ${pix.qr_code}`
     )
 
-  } catch (err) {
+    // ========================================
+    // VERIFICA PAGAMENTO AUTOMÁTICO
+    // ========================================
 
-    console.log('ERRO PIX:', err)
+    const paymentId = pagamento.body.id
 
-    ctx.reply(
-'❌ Erro ao gerar PIX. Verifique o token do Mercado Pago.'
-    )
+    const intervalo = setInterval(async () => {
+
+      try {
+
+        const verificar = await mercadopago.payment.findById(paymentId)
+
+        if (verificar.body.status === 'approved') {
+
+          clearInterval(intervalo)
+
+          const db = loadDB()
+
+          if (!db.users[ctx.from.id]) {
+            db.users[ctx.from.id] = {
+              saldo: 0
+            }
+          }
+
+          db.users[ctx.from.id].saldo += Number(valor)
+
+          saveDB(db)
+
+          await ctx.reply(
+`✅ PAGAMENTO APROVADO!
+
+💰 Saldo adicionado: R$${valor}
+
+🏦 Novo saldo: R$${db.users[ctx.from.id].saldo}`
+          )
+
+        }
+
+      } catch (err) {
+        console.log(err)
+      }
+
+    }, 5000)
+
+  } catch (error) {
+
+    console.log(error)
+
+    ctx.reply('❌ Erro ao gerar PIX.')
 
   }
 
 }
 
 // ========================================
+// MENU ADICIONAR SALDO
+// ========================================
+
+bot.hears(/ADICIONAR SALDO/i, async (ctx) => {
+
+  await ctx.reply(
+`✅ RECARREGAR SALDO
+
+Escolha um valor abaixo ou digite outro valor.
+
+📌 Pagamento via PIX
+💰 Mínimo: R$2
+💰 Máximo: R$150`,
+{
+reply_markup: {
+inline_keyboard: [
+
+[
+{ text: 'R$ 10', callback_data: 'pix_10' },
+{ text: 'R$ 20', callback_data: 'pix_20' }
+],
+
+[
+{ text: 'R$ 50', callback_data: 'pix_50' },
+{ text: 'R$ 100', callback_data: 'pix_100' }
+],
+
+[
+{ text: '💬 Digitar Valor', callback_data: 'pix_custom' }
+]
+
+]
+}
+}
+)
+
+})
+
+// ========================================
 // BOTÕES PIX
 // ========================================
 
 bot.action('pix_10', async (ctx) => {
-
-  try {
-    await ctx.answerCbQuery()
-  } catch {}
-
-  await gerarPix(ctx, 10)
-
+try { await ctx.answerCbQuery() } catch {}
+await gerarPix(ctx, 10)
 })
 
 bot.action('pix_20', async (ctx) => {
-
-  try {
-    await ctx.answerCbQuery()
-  } catch {}
-
-  await gerarPix(ctx, 20)
-
+try { await ctx.answerCbQuery() } catch {}
+await gerarPix(ctx, 20)
 })
 
 bot.action('pix_50', async (ctx) => {
-
-  try {
-    await ctx.answerCbQuery()
-  } catch {}
-
-  await gerarPix(ctx, 50)
-
+try { await ctx.answerCbQuery() } catch {}
+await gerarPix(ctx, 50)
 })
 
 bot.action('pix_100', async (ctx) => {
-
-  try {
-    await ctx.answerCbQuery()
-  } catch {}
-
-  await gerarPix(ctx, 100)
-
+try { await ctx.answerCbQuery() } catch {}
+await gerarPix(ctx, 100)
 })
 
 // ========================================
-// OUTRO VALOR
+// VALOR PERSONALIZADO
 // ========================================
 
 bot.action('pix_custom', async (ctx) => {
@@ -983,76 +1009,27 @@ Exemplos:
 })
 
 // ========================================
-// VALOR DIGITADO
+// RECEBER VALOR DIGITADO
 // ========================================
 
-bot.hears(/^\d+([,.]\d{1,2})?$/, async (ctx) => {
+bot.hears(/^\d+([.,]\d{1,2})?$/, async (ctx) => {
 
   const valor = Number(
     ctx.message.text.replace(',', '.')
   )
 
   if (valor < 2) {
-    return ctx.reply(
-      '❌ Valor mínimo: R$2,00'
-    )
+    return ctx.reply('❌ Valor mínimo: R$2,00')
   }
 
   if (valor > 150) {
-    return ctx.reply(
-      '❌ Valor máximo: R$150,00'
-    )
+    return ctx.reply('❌ Valor máximo: R$150,00')
   }
 
   await gerarPix(ctx, valor)
 
 })
-bot.action('voltar_menu', async (ctx) => {
-await ctx.answerCbQuery()
-ctx.reply('🏠 Menu principal', mainMenu())
-})
 
-const amount = Number(ctx.message.text.replace(',', '.'))
-
-if (amount < 2) {
-return ctx.reply('❌ O valor mínimo para adicionar saldo é R$2,00')
-}
-
-if (amount > 100) {
-return ctx.reply('❌ O valor máximo para adicionar saldo é R$100,00')
-}
-
-if (!MP_ACCESS_TOKEN) {
-return ctx.reply('⚠️ Mercado Pago ainda não configurado.')
-}
-
-try {
-
-const payment = await createPixPayment({
-amount,
-userId: ctx.from.id,
-description: `Saldo RS Streaming - ${ctx.from.id}`
-})
-
-const qr = payment.point_of_interaction?.transaction_data
-
-await ctx.reply(`
-✅ PIX GERADO!
-
-💰 Valor: R$${amount}
-
-📋 Copia e cola:
-
-${qr?.qr_code || 'Não retornou código PIX'}
-`)
-
-} catch (error) {
-
-console.log(error)
-
-ctx.reply('❌ Erro ao gerar PIX.')
-
-}
 
 
 bot.command('check', async (ctx) => {
