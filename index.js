@@ -881,7 +881,7 @@ async function gerarPix(ctx, valor) {
       }
     })
 
-    const pix = pagamento.point_of_interaction.transaction_data
+    const pix = pagamento.body.point_of_interaction.transaction_data
 
     await ctx.replyWithPhoto(
       {
