@@ -1092,21 +1092,6 @@ https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
 `)
 })
 bot.hears(/PESQUISAR SERVIÇO/i, async (ctx) => {
-    ctx.reply(`
-🔎 PESQUISAR SERVIÇO
-
-Digite o nome do serviço que deseja procurar.
-
-Exemplos:
-• Netflix
-• Disney
-• Prime Video
-• HBO Max
-• Crunchyroll
-• Globoplay
-    `)
-})
-bot.hears(/PESQUISAR SERVIÇO/i, async (ctx) => {
   ctx.reply(`🔎 PESQUISAR SERVIÇO
 
 Clique no botão abaixo para pesquisar:`, {
