@@ -809,7 +809,7 @@ ${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')}
 
 ⏰ Atendimento de 24H até 48H
 📲 Grupo de suporte:
-https://chaXt.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
+https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
 ━━━━━━━━━━━━━━━
 
 💙 Obrigado pela preferência!
