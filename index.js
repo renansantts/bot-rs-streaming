@@ -814,19 +814,6 @@ https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
 A RS Streaming agradece sua compra 🤝
 `)
 })
-// ========================================
-// MERCADO PAGO PIX AUTOMÁTICO
-// ========================================
-
-const mercadopago = require('mercadopago')
-
-mercadopago.configure({
-  access_token: process.env.MP_ACCESS_TOKEN
-})
-
-// ========================================
-// FUNÇÃO GERAR PIX
-// ========================================
 
 async function gerarPix(ctx, valor) {
 
