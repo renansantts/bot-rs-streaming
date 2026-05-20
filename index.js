@@ -854,37 +854,53 @@ inline_keyboard: [
 })
 
 })
+async function gerarPix(ctx, valor) {
+  try {
+    const pagamento = await createPixPayment({
+      amount: valor,
+      userId: ctx.from.id,
+      description: `Recarga de saldo R$ ${valor}`
+    })
 
+    const pix = pagamento.point_of_interaction.transaction_data
+
+    await ctx.replyWithPhoto(
+      { source: Buffer.from(pix.qr_code_base64, 'base64') },
+      {
+        caption: `✅ PIX GERADO COM SUCESSO
+
+💰 Valor: R$ ${valor}
+
+📌 Pague usando o QR Code acima.`
+      }
+    )
+
+    await ctx.reply(`📋 PIX COPIA E COLA:
+
+${pix.qr_code}`)
+  } catch (err) {
+    console.log('ERRO AO GERAR PIX:', err)
+    ctx.reply('❌ Erro ao gerar PIX. Verifique o token do Mercado Pago ou tente novamente.')
+  }
+}
 bot.action('pix_10', async (ctx) => {
-try {
-await ctx.answerCbQuery()
-} catch {}
-
-gerarPix(ctx, 10)
+  try { await ctx.answerCbQuery() } catch {}
+  await gerarPix(ctx, 10)
 })
 
 bot.action('pix_20', async (ctx) => {
-try {
-await ctx.answerCbQuery()
-} catch {}
-
-gerarPix(ctx, 20)
+  try { await ctx.answerCbQuery() } catch {}
+  await gerarPix(ctx, 20)
 })
 
 bot.action('pix_50', async (ctx) => {
-try {
-await ctx.answerCbQuery()
-} catch {}
-
-gerarPix(ctx, 50)
+  try { await ctx.answerCbQuery() } catch {}
+  await gerarPix(ctx, 50)
 })
 
 bot.action('pix_100', async (ctx) => {
-try {
-await ctx.answerCbQuery()
-} catch {}
-
-gerarPix(ctx, 100)
+  try { await ctx.answerCbQuery() } catch {}
+  await gerarPix(ctx, 100)
 })
 bot.action('pix_custom', async (ctx) => {
 await ctx.answerCbQuery()
