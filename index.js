@@ -927,16 +927,21 @@ ${pix.qr_code}`
 // MENU ADICIONAR SALDO
 // ========================================
 
+// ========================================
+// ADICIONAR SALDO
+// ========================================
+
 bot.hears(/ADICIONAR SALDO/i, async (ctx) => {
 
   await ctx.reply(
-`✅ RECARREGAR SALDO
+`💸 RECARREGAR SALDO
 
-Escolha um valor abaixo ou digite outro valor.
+Escolha um dos valores rápidos abaixo ou digite um valor personalizado.
 
-📌 Pagamento via PIX
-💰 Mínimo: R$2
-💰 Máximo: R$150`,
+📌 Observações:
+- Pagamento apenas por PIX.
+- Mínimo: R$2,00 | Máximo: R$150,00
+- Você pode ganhar bônus dependendo do valor da recarga.`,
 {
 reply_markup: {
 inline_keyboard: [
@@ -952,15 +957,79 @@ inline_keyboard: [
 ],
 
 [
-{ text: '💬 Digitar Valor', callback_data: 'pix_custom' }
+{ text: '📝 Digitar Outro Valor', callback_data: 'pix_custom' }
+],
+
+[
+{ text: '⬅️ Retornar', callback_data: 'voltar_menu' }
 ]
 
 ]
 }
+})
+
+})
+
+// ========================================
+// GERAR PIX
+// ========================================
+
+async function gerarPix(ctx, valor) {
+
+try {
+
+await ctx.reply(`⏳ Gerando PIX de R$${valor}, aguarde...`)
+
+const pagamento = await mercadopago.payment.create({
+
+transaction_amount: Number(valor),
+
+description: `Recarga RS Streaming`,
+
+payment_method_id: 'pix',
+
+external_reference: String(ctx.from.id),
+
+payer: {
+email: 'cliente@email.com'
+}
+
+})
+
+const pix = pagamento.body.point_of_interaction.transaction_data
+
+await ctx.replyWithPhoto(
+{
+source: Buffer.from(
+pix.qr_code_base64,
+'base64'
+)
+},
+{
+caption:
+`✅ PIX GERADO COM SUCESSO
+
+💰 Valor: R$ ${valor}
+
+📌 Pague usando o QR Code acima.`
 }
 )
 
-})
+await ctx.reply(
+`📋 PIX COPIA E COLA:
+
+${pix.qr_code}`
+)
+
+} catch (err) {
+
+console.log(err)
+
+ctx.reply('❌ Erro ao gerar PIX.')
+
+}
+
+}
 
 // ========================================
 // BOTÕES PIX
@@ -992,11 +1061,9 @@ await gerarPix(ctx, 100)
 
 bot.action('pix_custom', async (ctx) => {
 
-  try {
-    await ctx.answerCbQuery()
-  } catch {}
+try { await ctx.answerCbQuery() } catch {}
 
-  await ctx.reply(
+await ctx.reply(
 `💰 Digite o valor que deseja adicionar.
 
 Exemplos:
@@ -1004,32 +1071,100 @@ Exemplos:
 10
 20
 50`
-  )
+)
+
+})
+
+bot.hears(/^\d+([,.]\d{1,2})?$/, async (ctx) => {
+
+const valor = Number(
+ctx.message.text.replace(',', '.')
+)
+
+if (valor < 2) {
+return ctx.reply('❌ Valor mínimo: R$2,00')
+}
+
+if (valor > 150) {
+return ctx.reply('❌ Valor máximo: R$150,00')
+}
+
+await gerarPix(ctx, valor)
 
 })
 
 // ========================================
-// RECEBER VALOR DIGITADO
+// VOLTAR MENU
 // ========================================
 
-bot.hears(/^\d+([.,]\d{1,2})?$/, async (ctx) => {
+bot.action('voltar_menu', async (ctx) => {
 
-  const valor = Number(
-    ctx.message.text.replace(',', '.')
-  )
+try {
+await ctx.answerCbQuery()
+} catch {}
 
-  if (valor < 2) {
-    return ctx.reply('❌ Valor mínimo: R$2,00')
-  }
-
-  if (valor > 150) {
-    return ctx.reply('❌ Valor máximo: R$150,00')
-  }
-
-  await gerarPix(ctx, valor)
+ctx.reply('🏠 Menu principal', mainMenu())
 
 })
 
+// ========================================
+// WEBHOOK AUTOMÁTICO
+// ========================================
+
+app.post('/webhook', async (req, res) => {
+
+try {
+
+const paymentId = req.body?.data?.id
+
+if (!paymentId) {
+return res.sendStatus(200)
+}
+
+const paymentInfo = await mercadopago.payment.findById(paymentId)
+
+const payment = paymentInfo.body
+
+if (payment.status === 'approved') {
+
+const userId = payment.external_reference
+
+const valor = Number(payment.transaction_amount)
+
+const db = loadDB()
+
+if (!db.users[userId]) {
+
+db.users[userId] = {
+saldo: 0
+}
+
+}
+
+db.users[userId].saldo += valor
+
+saveDB(db)
+
+await bot.telegram.sendMessage(
+userId,
+`✅ Pagamento aprovado!
+
+💰 Saldo adicionado: R$${valor}`
+)
+
+}
+
+res.sendStatus(200)
+
+} catch (error) {
+
+console.log(error)
+
+res.sendStatus(500)
+
+}
+
+})
 
 
 bot.command('check', async (ctx) => {
