@@ -1092,21 +1092,29 @@ https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
 `)
 })
 bot.hears(/PESQUISAR SERVIÇO/i, async (ctx) => {
-  ctx.reply(`🔎 PESQUISAR SERVIÇO
+  ctx.reply(
+`🔎 PESQUISAR SERVIÇO
 
-Clique no botão abaixo para pesquisar:`, {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: '🔎 pesquisar logins',
-            switch_inline_query_current_chat: 'buscar '
-          }
-        ]
+Digite assim:
+
+buscar netflix
+buscar disney
+buscar hbo
+buscar prime`,
+{
+  reply_markup: {
+    inline_keyboard: [
+      [
+        {
+          text: '🔎 pesquisar logins',
+          switch_inline_query_current_chat: ''
+        }
       ]
-    }
-  })
+    ]
+  }
 })
+})
+
 bot.hears(/^buscar (.+)/i, async (ctx) => {
   const db = loadDB()
   const termo = ctx.match[1].toLowerCase()
@@ -1114,7 +1122,9 @@ bot.hears(/^buscar (.+)/i, async (ctx) => {
   const produtos = db.products || db.produtos || []
 
   const encontrados = produtos.filter(p =>
-    String(p.name || p.nome || '').toLowerCase().includes(termo)
+    String(p.name || p.nome || '')
+      .toLowerCase()
+      .includes(termo)
   )
 
   if (!encontrados.length) {
@@ -1124,14 +1134,20 @@ bot.hears(/^buscar (.+)/i, async (ctx) => {
   const texto = encontrados.map(p => {
     const nome = p.name || p.nome
     const valor = p.price || p.valor || 0
-    const estoque = p.stock?.length || p.estoque?.length || p.qtd || 0
+    const estoque =
+      p.stock?.length ||
+      p.estoque?.length ||
+      p.qtd ||
+      0
 
     return `✅ ${nome}
-💰 R$ ${valor}
+💰 Valor: R$ ${valor}
 📦 Estoque: ${estoque}`
   }).join('\n\n')
 
-  ctx.reply(`🔎 Resultado da pesquisa:\n\n${texto}`)
+  ctx.reply(`🔎 RESULTADO DA PESQUISA
+
+${texto}`)
 })
 bot.hears('👤 PERFIL', async (ctx) => {
 
