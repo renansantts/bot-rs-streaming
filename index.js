@@ -1681,6 +1681,26 @@ app.post('/webhook/mercadopago', async (req, res) => {
 })
 
 app.get('/', (req, res) => res.send('Bot RS Streaming online'))
+app.get('/', (req, res) => res.send('Bot RS Streaming online'))
+
+app.post('/webhook', async (req, res) => {
+  try {
+
+    console.log(req.body)
+
+    const paymentId = req.body?.data?.id
+
+    if (paymentId) {
+      await checkAndCreditPayment(String(paymentId))
+    }
+
+    res.sendStatus(200)
+
+  } catch (error) {
+    console.log(error)
+    res.sendStatus(500)
+  }
+})
 
 bot.launch()
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`))
