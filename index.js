@@ -1037,10 +1037,10 @@ bot.action('rank_media', async (ctx) => {
   ctx.reply(`📈 MÉDIA DE COMPRA\n\n${topRanking(db, 'mediaCompra', 'Média de Compra', '📊', 'Média')}`)
 })
 bot.hears(/ALUGAR BOT/i, async (ctx) => {
-  ctx.reply(`
-🤖 QUER UM BOT DE VENDAS IGUAL A ESTE?
+  ctx.reply(
+`🤖 QUER UM BOT DE VENDAS IGUAL A ESTE?
 
-Alugue seu próprio Bot de Vendas no Telegram totalmente automatizado para gerenciar e escalar seu negócio digital com praticidade, segurança e profissionalismo.
+Alugue seu próprio Bot de Vendas no Telegram totalmente automatizado para gerenciar e escalar seu negócio digital com praticidade.
 
 ━━━━━━━━━━━━━━
 ✨ FUNCIONALIDADES
@@ -1053,14 +1053,14 @@ Alugue seu próprio Bot de Vendas no Telegram totalmente automatizado para geren
 ⚡ Recarga automática via PIX
 👥 Sistema de afiliados
 🏆 Ranking automático
-📊 Painel administrativo
-📈 Estatísticas completas
+🛠 Painel administrativo
+📊 Estatísticas completas
 🔒 Bot privado e seguro
 📲 Suporte integrado
-🧾 Histórico de compras
-🔔 Alertas automáticos
+📜 Histórico de compras
+🚨 Alertas automáticos
 🚀 Entrega automática
-🧠 Pesquisa rápida de produtos
+🔎 Pesquisa rápida de produtos
 📌 Personalização completa
 
 ━━━━━━━━━━━━━━
@@ -1081,15 +1081,24 @@ Alugue seu próprio Bot de Vendas no Telegram totalmente automatizado para geren
 📞 CONTRATAR BOT
 ━━━━━━━━━━━━━━
 
-📲 ENTRE NO GRUPO:
-https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
 ⚠️ Após entrar:
 • Marque o ADM
 • Informe que deseja alugar o bot
 • Aguarde o atendimento
 
-💙 RS Streaming
-`)
+💙 RS Streaming`,
+{
+  reply_markup: {
+    inline_keyboard: [
+      [
+        {
+          text: '📲 ENTRAR EM CONTATO',
+          url: 'https://wa.me/5591992239663?text=Olá,%20quero%20alugar%20o%20bot'
+        }
+      ]
+    ]
+  }
+})
 })
 bot.hears(/PESQUISAR SERVIÇO/i, async (ctx) => {
   ctx.reply(
