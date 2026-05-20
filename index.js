@@ -816,23 +816,42 @@ https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
 A RS Streaming agradece sua compra 🤝
 `)
 })
-  
-bot.hears('💰 ADICIONAR SALDO', async (ctx) => {
+bot.hears(/ADICIONAR SALDO/i, async (ctx) => {
 
-ctx.reply(`
-💸 ADICIONAR SALDO 💸
+ctx.reply(
+`✅ RECARREGAR SALDO
 
-⬇️ Envie apenas o valor que deseja adicionar.
+Escolha um dos valores rápidos abaixo ou digite um valor personalizado.
 
-⚠️ Valor mínimo: R$2,00
-⚠️ Valor máximo: R$100,00
+📌 Observações:
+- Pagamento apenas por PIX.
+- Mínimo: R$2.00 | Máximo: R$150.00
+- Você pode ganhar bônus dependendo do valor da recarga.`,
+{
+reply_markup: {
+inline_keyboard: [
 
-Exemplos:
-5
-10
-20
-50
-`)
+[
+{ text: 'R$ 10', callback_data: 'pix_10' },
+{ text: 'R$ 20', callback_data: 'pix_20' }
+],
+
+[
+{ text: 'R$ 50', callback_data: 'pix_50' },
+{ text: 'R$ 100', callback_data: 'pix_100' }
+],
+
+[
+{ text: '⌨️ Digitar Outro Valor', callback_data: 'pix_custom' }
+],
+
+[
+{ text: '⬅️ Retornar', callback_data: 'voltar_menu' }
+]
+
+]
+}
+})
 
 })
 
