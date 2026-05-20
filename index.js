@@ -1,8 +1,6 @@
-import 'dotenv/config'
-import { Telegraf, Markup } from 'telegraf'
+import mercadopago from 'mercadopago'
 import express from 'express'
-import fs from 'fs'
-import { v4 as uuidv4 } from 'uuid'
+import { Telegraf } from 'telegraf'
 
 const BOT_TOKEN = process.env.BOT_TOKEN
 const ADMIN_ID = String(process.env.ADMIN_ID || '')
@@ -820,19 +818,120 @@ A RS Streaming agradece sua compra 🤝
 // MERCADO PAGO PIX AUTOMÁTICO
 // ========================================
 
-import mercadopago from 'mercadopago'
+const mercadopago = require('mercadopago')
 
-const pagamento = await mercadopago.payment.create({
-  access_token: process.env.MP_ACCESS_TOKEN,
-  transaction_amount: Number(valor),
-  description: `Recarga RS Streaming`,
-  payment_method_id: 'pix',
-  external_reference: String(ctx.from.id),
-  payer: {
-    email: 'cliente@email.com'
-  }
+mercadopago.configure({
+  access_token: process.env.MP_ACCESS_TOKEN
 })
 
+// ========================================
+// FUNÇÃO GERAR PIX
+// ========================================
+
+async function gerarPix(ctx, valor) {
+
+  try {
+
+    const payment_data = {
+      transaction_amount: Number(valor),
+      description: `Recarga RS Streaming`,
+      payment_method_id: 'pix',
+      payer: {
+        email: `cliente${ctx.from.id}@gmail.com`
+      }
+    }
+
+    const payment = new mercadopago.Payment(client)
+
+const pagamento = await payment.create({
+  body: payment_data
+})
+
+    const pix = pagamento.body.point_of_interaction.transaction_data
+
+    await ctx.replyWithPhoto(
+      {
+        source: Buffer.from(pix.qr_code_base64, 'base64')
+      },
+      {
+        caption:
+`✅ PIX GERADO COM SUCESSO
+
+💰 Valor: R$${valor}
+
+📌 Após o pagamento o saldo será adicionado automaticamente.
+
+⏳ Aguarde a confirmação automática.`
+      }
+    )
+
+    await ctx.reply(
+`📋 PIX COPIA E COLA:
+
+${pix.qr_code}`
+    )
+
+    // ========================================
+    // VERIFICA PAGAMENTO AUTOMÁTICO
+    // ========================================
+
+    const paymentId = pagamento.body.id
+
+    const intervalo = setInterval(async () => {
+
+      try {
+
+        const verificar = await mercadopago.payment.findById(paymentId)
+
+        if (verificar.body.status === 'approved') {
+
+          clearInterval(intervalo)
+
+          const db = loadDB()
+
+          if (!db.users[ctx.from.id]) {
+            db.users[ctx.from.id] = {
+              saldo: 0
+            }
+          }
+
+          db.users[ctx.from.id].saldo += Number(valor)
+
+          saveDB(db)
+
+          await ctx.reply(
+`✅ PAGAMENTO APROVADO!
+
+💰 Saldo adicionado: R$${valor}
+
+🏦 Novo saldo: R$${db.users[ctx.from.id].saldo}`
+          )
+
+        }
+
+      } catch (err) {
+        console.log(err)
+      }
+
+    }, 5000)
+
+  } catch (error) {
+
+    console.log(error)
+
+    ctx.reply('❌ Erro ao gerar PIX.')
+
+  }
+
+}
+
+// ========================================
+// MENU ADICIONAR SALDO
+// ========================================
+
+// ========================================
+// ADICIONAR SALDO
+// ========================================
 
 bot.hears(/ADICIONAR SALDO/i, async (ctx) => {
 
@@ -873,64 +972,62 @@ inline_keyboard: [
 
 })
 
-// ========================================
-// GERAR PIX
-// ========================================
+
 
 async function gerarPix(ctx, valor) {
 
-try {
+  try {
 
-await ctx.reply(`⏳ Gerando PIX de R$${valor}, aguarde...`)
+    await ctx.reply(`⏳ Gerando PIX de R$${valor}, aguarde...`)
 
-const pagamento = await mercadopago.payment.create({
+    const client = new mercadopago.MercadoPagoConfig({
+      accessToken: process.env.MP_ACCESS_TOKEN
+    })
 
-transaction_amount: Number(valor),
+    const payment = new mercadopago.Payment(client)
 
-description: `Recarga RS Streaming`,
+    const pagamento = await payment.create({
+      body: {
+        transaction_amount: Number(valor),
+        description: 'Recarga RS Streaming',
+        payment_method_id: 'pix',
+        external_reference: String(ctx.from.id),
+        payer: {
+          email: 'cliente@email.com'
+        }
+      }
+    })
 
-payment_method_id: 'pix',
+    const pix = pagamento.point_of_interaction.transaction_data
 
-external_reference: String(ctx.from.id),
-
-payer: {
-email: 'cliente@email.com'
-}
-
-})
-
-const pix = pagamento.body.point_of_interaction.transaction_data
-
-await ctx.replyWithPhoto(
-{
-source: Buffer.from(
-pix.qr_code_base64,
-'base64'
-)
-},
-{
-caption:
+    await ctx.replyWithPhoto(
+      {
+        source: Buffer.from(
+          pix.qr_code_base64,
+          'base64'
+        )
+      },
+      {
+        caption:
 `✅ PIX GERADO COM SUCESSO
 
-💰 Valor: R$ ${valor}
+💰 Valor: R$${valor}
 
-📌 Pague usando o QR Code acima.`
-}
-)
+📌 Pague usando o QR Code acima.
 
-await ctx.reply(
-`📋 PIX COPIA E COLA:
+📋 PIX COPIA E COLA:
 
 ${pix.qr_code}`
-)
+      }
+    )
 
-} catch (err) {
+  } catch (erro) {
 
-console.log(err)
+    console.log(erro)
 
-ctx.reply('❌ Erro ao gerar PIX.')
+    ctx.reply('❌ Erro ao gerar PIX.')
 
-}
+  }
 
 }
 
