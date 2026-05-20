@@ -820,7 +820,7 @@ A RS Streaming agradece sua compra 🤝
 // MERCADO PAGO PIX AUTOMÁTICO
 // ========================================
 
-const mercadopago = require('mercadopago')
+import mercadopago from 'mercadopago'
 
 mercadopago.configure({
   access_token: process.env.MP_ACCESS_TOKEN
