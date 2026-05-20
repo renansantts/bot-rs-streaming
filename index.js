@@ -822,8 +822,15 @@ A RS Streaming agradece sua compra 🤝
 
 import mercadopago from 'mercadopago'
 
-mercadopago.configure({
-  access_token: process.env.MP_ACCESS_TOKEN
+const pagamento = await mercadopago.payment.create({
+  access_token: process.env.MP_ACCESS_TOKEN,
+  transaction_amount: Number(valor),
+  description: `Recarga RS Streaming`,
+  payment_method_id: 'pix',
+  external_reference: String(ctx.from.id),
+  payer: {
+    email: 'cliente@email.com'
+  }
 })
 
 
