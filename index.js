@@ -854,15 +854,59 @@ inline_keyboard: [
 })
 
 })
+
+bot.action('pix_10', async (ctx) => {
+await ctx.answerCbQuery()
+gerarPix(ctx, 10)
+})
+
+bot.action('pix_20', async (ctx) => {
+await ctx.answerCbQuery()
+gerarPix(ctx, 20)
+})
+
+bot.action('pix_50', async (ctx) => {
+await ctx.answerCbQuery()
+gerarPix(ctx, 50)
+})
+
+bot.action('pix_100', async (ctx) => {
+await ctx.answerCbQuery()
+gerarPix(ctx, 100)
+})
+
 bot.action('pix_custom', async (ctx) => {
-  await ctx.answerCbQuery()
-  await ctx.reply(`💰 Digite o valor que deseja adicionar.
+await ctx.answerCbQuery()
+
+await ctx.reply(
+`💰 Digite o valor que deseja adicionar.
 
 Exemplos:
 5
 10
 20
-50`)
+50`
+)
+
+})
+
+bot.hears(/^\d+([,.]\d{1,2})?$/, async (ctx) => {
+
+const valor = Number(ctx.message.text.replace(',', '.'))
+
+if (valor < 2)
+return ctx.reply('❌ Valor mínimo: R$2,00')
+
+if (valor > 150)
+return ctx.reply('❌ Valor máximo: R$150,00')
+
+gerarPix(ctx, valor)
+
+})
+
+bot.action('voltar_menu', async (ctx) => {
+await ctx.answerCbQuery()
+ctx.reply('🏠 Menu principal', mainMenu())
 })
 
 bot.hears(/^\d+([,.]\d{1,2})?$/, async (ctx) => {
