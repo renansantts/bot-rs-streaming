@@ -1106,6 +1106,21 @@ Exemplos:
 • Globoplay
     `)
 })
+bot.hears(/PESQUISAR SERVIÇO/i, async (ctx) => {
+  ctx.reply(`
+🔎 PESQUISAR SERVIÇO
+
+Para pesquisar um login, clique no botão abaixo:
+`, {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: '🔎 PESQUISAR LOGIN', url: 'https://t.me/Hrstore393_bot?start=buscar_login' }
+        ]
+      ]
+    }
+  })
+})
 bot.hears('👤 PERFIL', async (ctx) => {
 
 const db = loadDB()
