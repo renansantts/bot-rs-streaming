@@ -857,22 +857,30 @@ inline_keyboard: [
 
 bot.action('pix_10', async (ctx) => {
 await ctx.answerCbQuery()
-gerarPix(ctx, 10)
+ctx.session.valorPix = 10
+ctx.session.esperandoValor = true
+await ctx.reply('💰 Gerando PIX de R$10...')
 })
 
 bot.action('pix_20', async (ctx) => {
 await ctx.answerCbQuery()
-gerarPix(ctx, 20)
+ctx.session.valorPix = 20
+ctx.session.esperandoValor = true
+await ctx.reply('💰 Gerando PIX de R$20...')
 })
 
 bot.action('pix_50', async (ctx) => {
 await ctx.answerCbQuery()
-gerarPix(ctx, 50)
+ctx.session.valorPix = 50
+ctx.session.esperandoValor = true
+await ctx.reply('💰 Gerando PIX de R$50...')
 })
 
 bot.action('pix_100', async (ctx) => {
 await ctx.answerCbQuery()
-gerarPix(ctx, 100)
+ctx.session.valorPix = 100
+ctx.session.esperandoValor = true
+await ctx.reply('💰 Gerando PIX de R$100...')
 })
 
 bot.action('pix_custom', async (ctx) => {
