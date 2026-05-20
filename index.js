@@ -120,7 +120,7 @@ bot.command('menu', (ctx) => {
   ctx.reply(`🏠 Menu principal\n💰 Saldo: ${money(user.balance)}`, mainMenu())
 })
 
-bot.command('admin', (ctx) => {
+bot.command('adm', (ctx) => {
   if (String(ctx.from.id) !== ADMIN_ID) {
     return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
   }
@@ -1098,7 +1098,7 @@ Clique no botão abaixo para pesquisar:`, {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: '🔎 PESQUISAR LOGIN', url: 'https://t.me/Hrstore393_bot?start=buscar_login' }
+          { text: '🔎 PESQUISAR LOGIN', url: 'https://t.me/rsstreaming_bot?start=buscar_login' }
         ]
       ]
     }
