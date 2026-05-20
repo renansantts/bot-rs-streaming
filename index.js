@@ -1095,12 +1095,7 @@ bot.hears(/PESQUISAR SERVIÇO/i, async (ctx) => {
   ctx.reply(
 `🔎 PESQUISAR SERVIÇO
 
-Digite assim:
-
-buscar netflix
-buscar disney
-buscar hbo
-buscar prime`,
+Clique no botão abaixo para pesquisar.`,
 {
   reply_markup: {
     inline_keyboard: [
@@ -1115,39 +1110,44 @@ buscar prime`,
 })
 })
 
-bot.hears(/^buscar (.+)/i, async (ctx) => {
+bot.on('inline_query', async (ctx) => {
   const db = loadDB()
-  const termo = ctx.match[1].toLowerCase()
+  const query = ctx.inlineQuery.query.toLowerCase()
+
+  if (!query) return
 
   const produtos = db.products || db.produtos || []
 
   const encontrados = produtos.filter(p =>
     String(p.name || p.nome || '')
       .toLowerCase()
-      .includes(termo)
+      .includes(query)
   )
 
-  if (!encontrados.length) {
-    return ctx.reply('❌ Nenhum produto encontrado.')
-  }
+  const results = encontrados.map((p, i) => ({
+    type: 'article',
+    id: String(i),
+    title: p.name || p.nome,
+    description:
+      `Valor: R$${p.price || p.valor} | Estoque: ${
+        p.stock?.length || p.estoque?.length || p.qtd || 0
+      }`,
+    input_message_content: {
+      message_text:
+`🛍️ Produto: ${p.name || p.nome}
 
-  const texto = encontrados.map(p => {
-    const nome = p.name || p.nome
-    const valor = p.price || p.valor || 0
-    const estoque =
-      p.stock?.length ||
-      p.estoque?.length ||
-      p.qtd ||
-      0
+💰 Valor: R$${p.price || p.valor}
+📦 Estoque: ${
+  p.stock?.length || p.estoque?.length || p.qtd || 0
+}
 
-    return `✅ ${nome}
-💰 Valor: R$ ${valor}
-📦 Estoque: ${estoque}`
-  }).join('\n\n')
+⏳ Duração: 30 dias`
+    }
+  }))
 
-  ctx.reply(`🔎 RESULTADO DA PESQUISA
-
-${texto}`)
+  await ctx.answerInlineQuery(results, {
+    cache_time: 0
+  })
 })
 bot.hears('👤 PERFIL', async (ctx) => {
 
