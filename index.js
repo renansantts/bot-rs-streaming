@@ -1092,13 +1092,18 @@ https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
 `)
 })
 bot.hears(/PESQUISAR SERVIÇO/i, async (ctx) => {
-  ctx.reply(`🔎 PESQUISAR SERVIÇO
+  ctx.reply(`
+👋 Olá, ${ctx.from.first_name}!
 
-Clique no botão abaixo para pesquisar:`, {
+Digite o nome do login que deseja procurar usando o botão abaixo.
+`, {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: '🔎 PESQUISAR LOGIN', url: 'https://t.me/rsstreaming_bot?start=buscar_login' }
+          {
+            text: '🔎 pesquisar logins',
+            switch_inline_query_current_chat: 'buscar_loguin '
+          }
         ]
       ]
     }
