@@ -1107,11 +1107,9 @@ Exemplos:
     `)
 })
 bot.hears(/PESQUISAR SERVIÇO/i, async (ctx) => {
-  ctx.reply(`
-🔎 PESQUISAR SERVIÇO
+  ctx.reply(`🔎 PESQUISAR SERVIÇO
 
-Para pesquisar um login, clique no botão abaixo:
-`, {
+Clique no botão abaixo para pesquisar:`, {
     reply_markup: {
       inline_keyboard: [
         [
