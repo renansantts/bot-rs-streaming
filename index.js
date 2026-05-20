@@ -1,6 +1,7 @@
 import mercadopago from 'mercadopago'
 import express from 'express'
 import { Telegraf } from 'telegraf'
+import fs from 'fs'
 
 const BOT_TOKEN = process.env.BOT_TOKEN
 const ADMIN_ID = String(process.env.ADMIN_ID || '')
