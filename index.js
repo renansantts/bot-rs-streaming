@@ -1091,23 +1091,32 @@ https://chat.whatsapp.com/IuOQb614sFoEuPW6CNz6wX
 💙 RS Streaming
 `)
 })
-bot.hears(/PESQUISAR SERVIÇO/i, async (ctx) => {
-  ctx.reply(`
-👋 Olá, ${ctx.from.first_name}!
 
-Digite o nome do login que deseja procurar usando o botão abaixo.
-`, {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: '🔎 pesquisar logins',
-            switch_inline_query_current_chat: 'buscar_loguin '
-          }
-        ]
-      ]
-    }
-  })
+bot.hears(/^buscar (.+)/i, async (ctx) => {
+  const db = loadDB()
+  const termo = ctx.match[1].toLowerCase()
+
+  const produtos = db.products || db.produtos || []
+
+  const encontrados = produtos.filter(p =>
+    String(p.name || p.nome || '').toLowerCase().includes(termo)
+  )
+
+  if (!encontrados.length) {
+    return ctx.reply('❌ Nenhum produto encontrado.')
+  }
+
+  const texto = encontrados.map(p => {
+    const nome = p.name || p.nome
+    const valor = p.price || p.valor || 0
+    const estoque = p.stock?.length || p.estoque?.length || p.qtd || 0
+
+    return `✅ ${nome}
+💰 R$ ${valor}
+📦 Estoque: ${estoque}`
+  }).join('\n\n')
+
+  ctx.reply(`🔎 Resultado da pesquisa:\n\n${texto}`)
 })
 bot.hears('👤 PERFIL', async (ctx) => {
 
