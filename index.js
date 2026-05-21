@@ -97,7 +97,7 @@ bot.start(async (ctx) => {
   const user = getUser(db, ctx.from.id)
 
   await ctx.replyWithPhoto(
-    'https://i.imgur.com/Ssw1yef.jpeg',
+    'https://i.ibb.co/kVvJpVWK/perfil.jpg',
     {
       caption: `
 🤩 Bem-vindo à melhor loja de streamings do Telegram! ✨
