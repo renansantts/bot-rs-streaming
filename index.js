@@ -1,6 +1,6 @@
 import mercadopago from 'mercadopago'
 import express from 'express'
-import { Telegraf } from 'telegraf'
+import { Telegraf, Markup } from 'telegraf'
 import fs from 'fs'
 
 const BOT_TOKEN = process.env.BOT_TOKEN
