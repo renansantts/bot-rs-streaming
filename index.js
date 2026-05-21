@@ -1003,9 +1003,18 @@ if (!paymentId) {
 return res.sendStatus(200)
 }
 
-const paymentInfo = await mercadopago.payment.get(paymentId)
+const client = new mercadopago.MercadoPagoConfig({
+  accessToken: process.env.MP_ACCESS_TOKEN
+})
 
-const payment = paymentInfo.body
+const paymentClient = new mercadopago.Payment(client)
+
+const paymentInfo = await paymentClient.get({
+  id: paymentId
+})
+
+const payment = paymentInfo.body || paymentInfo
+
 
 if (payment.status === 'approved') {
 
