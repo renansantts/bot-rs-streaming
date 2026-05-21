@@ -113,12 +113,62 @@ Entre em contato com nosso suporte, estamos à disposição para te ajudar! 😊
 })
 
 bot.command('menu', (ctx) => {
+  
   const db = loadDB()
   const user = getUser(db, ctx.from.id)
 
   ctx.reply(`🏠 Menu principal\n💰 Saldo: ${money(user.balance)}`, mainMenu())
 })
+bot.command('buscar', async (ctx) => {
+  ctx.reply('🔎 Digite o nome do aplicativo que deseja buscar.')
+})
 
+bot.command('pix', async (ctx) => {
+  ctx.reply('💸 Informe o valor que deseja adicionar.')
+})
+
+bot.command('afiliados', async (ctx) => {
+  ctx.reply(`
+👥 Sistema de Afiliados
+
+🔗 Compartilhe seu link e ganhe comissão nas compras realizadas.
+
+💰 Comissão: 35%
+`)
+})
+
+bot.command('historico', async (ctx) => {
+  ctx.reply('🛒 Seu histórico de compras aparecerá aqui.')
+})
+
+bot.command('alertas', async (ctx) => {
+  ctx.reply('🚨 Nenhum alerta disponível no momento.')
+})
+
+bot.command('id', async (ctx) => {
+  const db = loadDB()
+  const user = getUser(db, ctx.from.id)
+
+  ctx.reply(`
+🪪 Seu Perfil
+
+🆔 ID: ${ctx.from.id}
+💰 Saldo Atual: ${money(user.balance)}
+🏆 Bônus De Indicação: R$ 0,00
+`)
+})
+
+bot.command('ranking', async (ctx) => {
+  ctx.reply(`
+🏆 Ranking Geral
+
+🥇 Top saldo
+🥈 Top depósitos
+🥉 Top compras
+
+🚧 Sistema em desenvolvimento.
+`)
+})
 bot.command('adm', (ctx) => {
   if (String(ctx.from.id) !== ADMIN_ID) {
     return ctx.reply(`❌ Você não tem permissão.\n\nSeu ID é: ${ctx.from.id}`)
