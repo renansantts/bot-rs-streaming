@@ -96,10 +96,10 @@ bot.start(async (ctx) => {
   const db = loadDB()
   const user = getUser(db, ctx.from.id)
 
-ctx.replyWithPhoto(
-  { url: 'https://i.imgur.com/Ssw1yef.jpeg' },
-  {
-    caption: `
+  await ctx.replyWithPhoto(
+    { url: 'https://i.imgur.com/Ssw1yef.jpeg' },
+    {
+      caption: `
 🤩 Bem-vindo à melhor loja de streamings do Telegram! ✨
 🎬 Logins rápidos, seguros e pelo melhor preço!
 
@@ -113,9 +113,9 @@ Entre em contato com nosso suporte, estamos à disposição para te ajudar! 😊
 💰 Saldo Atual: ${money(user.balance)}
 🏆 Bônus De Indicação: R$ 0,00
 `,
-    ...mainMenu()
-  }
-)
+      ...mainMenu()
+    }
+  )
 })
 bot.command('menu', (ctx) => {
   
