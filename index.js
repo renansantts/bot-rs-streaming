@@ -1003,7 +1003,7 @@ if (!paymentId) {
 return res.sendStatus(200)
 }
 
-const paymentInfo = await mercadopago.payment.findById(paymentId)
+const paymentInfo = await mercadopago.payment.get(paymentId)
 
 const payment = paymentInfo.body
 
