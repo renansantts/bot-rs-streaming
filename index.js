@@ -47,26 +47,31 @@ function money(value) {
 function isAdmin(ctx) {
   return String(ctx.from.id) === ADMIN_ID
 }
-// MENU PRINCIPAL
+
 function mainMenu() {
   return {
     reply_markup: {
-      keyboard: [
-        ['🎬 MENU PRINCIPAL'],
-        ['👤 PERFIL', '💰 ADICIONAR SALDO'],
-        ['🏆 RANKING'],
-        ['👨🏻‍💻 SUPORTE', '📍 ALUGAR BOT'],
-        ['🔎 PESQUISAR SERVIÇO']
-      ],
-      resize_keyboard: true
+      inline_keyboard: [
+        [{ text: '🎬 MENU PRINCIPAL', callback_data: 'menu' }],
+        [
+          { text: '👤 PERFIL', callback_data: 'perfil' },
+          { text: '💰 ADICIONAR SALDO', callback_data: 'saldo' }
+        ],
+        [{ text: '🏆 RANKING', callback_data: 'ranking' }],
+        [
+          { text: '🧑‍💻 SUPORTE', callback_data: 'suporte' },
+          { text: '📍 ALUGAR BOT', callback_data: 'alugar' }
+        ],
+        [{ text: '🔎 PESQUISAR SERVIÇO', callback_data: 'buscar' }]
+      ]
     }
   }
 }
 
-bot.hears('🎬 MENU PRINCIPAL', (ctx) => {
+bot.action('menu', async (ctx) => {
+  await ctx.answerCbQuery()
   mostrarProdutos(ctx)
 })
-
 // PAINEL ADMIN
 function adminMenu() {
   return {
