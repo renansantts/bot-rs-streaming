@@ -1027,12 +1027,13 @@ const db = loadDB()
 if (!db.users[userId]) {
 
 db.users[userId] = {
-saldo: 0
+balance: 0,
+purchases: []
 }
 
 }
 
-db.users[userId].saldo += valor
+db.users[userId].balance += valor
 
 saveDB(db)
 
